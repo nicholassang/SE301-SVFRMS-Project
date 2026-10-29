@@ -1,127 +1,147 @@
 ===== DAILY REPORT =====
-Timestamp: Thu Oct 29 22:14:57 GMT+08:00 2026
-Generated Alerts: 111
+Timestamp: Thu Oct 29 22:23:51 GMT+08:00 2026
+Generated Alerts: 130
 Active Alerts: 0
-Water Usage: 820 L
-Energy Usage: 439 kWh
-Archived alerts: 111
+Water Usage: 675 L
+Energy Usage: 415 kWh
+Archived alerts: 130
 ---
 
-Archived 111 alerts
 Daily Report
+Archived 130 alerts
 --- chamber wise summary ---
-CH1 -> Alerts=46, Actions=39, Last Action=Grow Light Activated, Last Alert=CH1 Tomato Low Temp
-CH2 -> Alerts=43, Actions=34, Last Action=Nutrient Injector Activated, Last Alert=CH2 Low Nutrient Level
-CH4 -> Alerts=22, Actions=13, Last Action=Grow Light Activated, Last Alert=CH4 Low Light Level
+CH1 -> Alerts=37, Actions=30, Last Action=Dehumidifier Activated, Last Alert=CH1 Tomato High Humidity
+CH2 -> Alerts=37, Actions=35, Last Action=Grow Light Activated, Last Alert=CH2 Low Light Level
+CH3 -> Alerts=30, Actions=28, Last Action=Cooling Fan Activated, Last Alert=CH3 Lettuce High Temp
+CH4 -> Alerts=26, Actions=17, Last Action=Grow Light Activated, Last Alert=CH4 Low Light Level
 --- archived alerts ---
+CH4 Chili High Temp
+CH1 Tomato Low Temp
+CH3 Lettuce High Temp
+CH2 Strawberry High Temp
+CH2 Strawberry Low Humidity
+CH3 Lettuce High Temp
+CH1 Tomato Low Soil Moisture
+CH4 Low Light Level
+CH2 Strawberry High Humidity
+CH4 Chili Low Temp
+CH2 Strawberry High Humidity
+CH4 Low Light Level
+CH1 Tomato High Temp
+CH2 Low Light Level
+CH1 Tomato High Temp
+CH2 Low Nutrient Level
+CH1 Low Light Level
+CH2 Low Light Level
+CH1 Tomato Low Temp
+CH3 Low Light Level
+CH1 Low Light Level
+CH4 Low Nutrient Level
+CH3 Low Nutrient Level
+CH1 Tomato High Humidity
+CH3 Lettuce High Temp
+CH1 Low Nutrient Level
+CH2 Strawberry Low Temp
 CH1 Tomato High Temp
 CH2 Strawberry Low Humidity
 CH4 Low Light Level
-CH1 Tomato High Humidity
-CH2 Strawberry High Temp
-CH4 Low Nutrient Level
-CH2 Strawberry High Humidity
-CH1 Tomato High Temp
-CH4 Chili High Temp
-CH1 Tomato High Humidity
-CH4 Chili High Temp
-CH1 Tomato Low Soil Moisture
-CH4 Chili Low Temp
-CH1 Low Nutrient Level
-CH4 Low Nutrient Level
-CH2 Low Nutrient Level
-CH1 Tomato High Temp
-CH4 Chili Low Temp
-CH1 Tomato High Humidity
-CH4 Chili Low Temp
-CH2 Strawberry Low Temp
-CH4 Chili High Temp
-CH2 Strawberry High Humidity
-CH1 Tomato High Humidity
-CH4 Low Nutrient Level
-CH1 Low Nutrient Level
-CH1 Tomato Low Temp
+CH3 Low Nutrient Level
 CH1 Tomato Low Humidity
-CH2 Low Light Level
+CH3 Lettuce High Temp
+CH1 Tomato High Temp
+CH3 Lettuce High Temp
+CH4 Low Nutrient Level
+CH1 Tomato Low Humidity
+CH4 Chili Low Temp
+CH1 Tomato Low Soil Moisture
+CH4 Low Light Level
+CH3 Lettuce High Temp
+CH1 Tomato High Humidity
+CH3 Low Nutrient Level
+CH4 Chili Low Temp
+CH4 Chili Low Temp
+CH3 Lettuce High Temp
 CH4 Chili Low Temp
 CH4 Low Light Level
+CH2 Strawberry High Temp
+CH1 Tomato Low Soil Moisture
+CH2 Strawberry Low Humidity
+CH1 Low Light Level
+CH4 Chili Low Temp
+CH4 Low Nutrient Level
+CH3 Lettuce High Temp
+CH1 Low Nutrient Level
+CH3 Lettuce High Temp
+CH1 Tomato Low Temp
+CH1 Tomato Low Temp
+CH3 Low Nutrient Level
 CH1 Tomato Low Soil Moisture
 CH2 Strawberry High Temp
-CH4 Chili Low Temp
+CH3 Lettuce High Temp
+CH1 Low Light Level
+CH2 Strawberry Low Temp
+CH1 Low Nutrient Level
 CH2 Strawberry Low Humidity
+CH4 Chili High Temp
+CH2 Strawberry High Temp
 CH4 Chili Low Temp
-CH4 Chili Low Temp
-CH1 Tomato Low Temp
-CH4 Chili Low Temp
+CH4 Low Light Level
+CH1 Tomato High Temp
+CH2 Strawberry High Humidity
 CH1 Tomato High Humidity
-CH2 Low Nutrient Level
+CH3 Low Light Level
+CH1 Tomato Low Temp
+CH1 Low Light Level
+CH3 Lettuce High Temp
+CH2 Strawberry High Temp
+CH1 Tomato Low Temp
+CH2 Strawberry Low Humidity
+CH1 Tomato Low Soil Moisture
+CH4 Low Nutrient Level
+CH2 Strawberry High Temp
+CH4 Chili High Temp
+CH3 Low Light Level
+CH1 Tomato Low Temp
+CH1 Tomato High Humidity
+CH2 Strawberry Low Humidity
+CH3 Lettuce High Temp
 CH4 Low Nutrient Level
 CH1 Low Light Level
-CH2 Strawberry Low Temp
-CH1 Tomato Low Soil Moisture
-CH2 Strawberry High Humidity
-CH4 Low Light Level
-CH1 Low Nutrient Level
+CH4 Chili Low Temp
 CH4 Chili High Temp
+CH3 Lettuce High Temp
+CH1 Tomato High Temp
+CH3 Low Light Level
+CH2 Strawberry High Temp
+CH3 Lettuce Low Temp
+CH3 Low Light Level
+CH2 Strawberry Low Humidity
+CH1 Tomato High Humidity
+CH2 Strawberry High Temp
+CH1 Tomato High Humidity
+CH2 Strawberry High Humidity
+CH1 Tomato High Temp
+CH2 Strawberry High Temp
+CH1 Tomato High Humidity
+CH2 Low Light Level
+CH3 Low Nutrient Level
+CH3 Lettuce Low Temp
+CH4 Low Nutrient Level
+CH3 Low Nutrient Level
 CH2 Strawberry High Temp
 CH4 Chili Low Temp
-CH2 Strawberry Low Humidity
-CH4 Chili High Temp
-CH1 Tomato High Humidity
-CH2 Strawberry Low Temp
-CH1 Tomato Low Temp
-CH2 Strawberry High Humidity
-CH1 Tomato Low Humidity
 CH4 Low Light Level
-CH1 Tomato Low Soil Moisture
-CH2 Strawberry Low Temp
-CH1 Low Light Level
+CH2 Strawberry High Humidity
+CH3 Low Nutrient Level
+CH2 Low Nutrient Level
+CH3 Lettuce High Temp
+CH2 Strawberry High Temp
+CH3 Low Nutrient Level
+CH2 Strawberry High Temp
+CH3 Lettuce High Temp
+CH2 Strawberry High Humidity
+CH2 Strawberry Low Humidity
+CH2 Strawberry High Temp
+CH2 Strawberry Low Humidity
 CH2 Strawberry High Humidity
 CH2 Low Light Level
-CH1 Low Light Level
-CH2 Strawberry Low Temp
-CH2 Strawberry Low Humidity
-CH1 Tomato High Temp
-CH2 Strawberry Low Humidity
-CH1 Tomato Low Humidity
-CH2 Low Nutrient Level
-CH2 Strawberry High Temp
-CH1 Tomato High Temp
-CH2 Strawberry High Humidity
-CH1 Tomato Low Soil Moisture
-CH2 Strawberry Low Temp
-CH1 Tomato Low Temp
-CH2 Strawberry Low Humidity
-CH1 Tomato Low Humidity
-CH2 Strawberry High Temp
-CH2 Strawberry Low Temp
-CH2 Strawberry Low Temp
-CH1 Tomato Low Soil Moisture
-CH2 Low Light Level
-CH1 Low Nutrient Level
-CH2 Low Nutrient Level
-CH1 Tomato Low Temp
-CH1 Tomato High Humidity
-CH2 Strawberry High Humidity
-CH1 Tomato Low Soil Moisture
-CH2 Strawberry High Temp
-CH1 Tomato High Temp
-CH2 Strawberry Low Humidity
-CH1 Tomato High Humidity
-CH2 Low Nutrient Level
-CH1 Tomato High Temp
-CH2 Strawberry Low Humidity
-CH1 Tomato High Humidity
-CH2 Low Light Level
-CH2 Strawberry Low Temp
-CH1 Low Light Level
-CH2 Strawberry Low Humidity
-CH2 Strawberry High Temp
-CH2 Strawberry Low Humidity
-CH2 Low Nutrient Level
-CH1 Tomato Low Humidity
-CH1 Low Light Level
-CH1 Tomato Low Temp
-CH1 Tomato High Humidity
-CH1 Low Light Level
-CH1 Tomato Low Temp

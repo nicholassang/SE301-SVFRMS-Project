@@ -208,49 +208,6 @@ public class SVFRMS {
         }
     }
 
-    public static void generateDailyReport(){
-        synchronized(alertLock){
-            synchronized(reportLock){
-                logger.info("""
-                        ===== DAILY REPORT =====
-                        Generated Alerts: %d
-                        Active Alerts: %d
-                        Water Usage: %d L
-                        Energy Usage: %d kWh
-                        """.formatted(
-                        totalAlertsGenerated,
-                        totalAlerts,
-                        totalWaterUsage,
-                        totalEnergyUsage
-                ));
-                reports.add("Daily Report");
-            }
-        }
-    }
-
-    public static void archiveAlerts(){
-        ArrayList<String> toArchive = new ArrayList<>();
-
-        synchronized(alertLock){
-            //try{Thread.sleep(100);}catch(Exception e){}
-            if(!alerts.isEmpty()){
-                toArchive.addAll(alerts);
-                alerts.clear();
-                totalAlerts = 0;
-            }
-            synchronized(reportLock){
-                if(!toArchive.isEmpty()){
-                    archivedAlerts.addAll(toArchive);
-                    reports.add("Archived " + toArchive.size() + " alerts");
-                    logger.info("Archiving alerts... " + toArchive.size() + " moved to archive.");
-                } else {
-                    reports.add("No alerts to archive");
-                    logger.warning("Archiving alerts... no active alerts to archive.");
-                }
-            }
-        }
-    }
-
     public static void irrigationCycle(){
         totalWaterUsage += 100;
     }
@@ -386,15 +343,12 @@ public class SVFRMS {
         }
         activateControlThread.join();
 
-        Thread genReport = new Thread(new Runnable() {
-            public void run() {
-                generateDailyReport();
-            }
+        Thread genReport = new Thread(() -> {
+            ReportManager.generateDailyReport();
         });
-        Thread archiveAlerts = new Thread(new Runnable() {
-            public void run() {
-                archiveAlerts();
-            }
+
+        Thread archiveAlerts = new Thread(() -> {
+            ArchiveManager.archiveAlerts();
         });
 
         archiveAlerts.start();
