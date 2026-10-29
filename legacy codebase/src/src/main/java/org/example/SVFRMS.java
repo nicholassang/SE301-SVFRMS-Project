@@ -3,9 +3,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 
+import java.util.logging.Logger;
+
 public class SVFRMS {
     public static final Path ARCHIVE_DIR = Paths.get("archive");
     public static final Path REPORT_FILE = ARCHIVE_DIR.resolve("daily_report.txt");
+
+    private static final Logger logger = AppLogger.getLogger();
 
     public static ArrayList<String> alerts = new ArrayList<>();
     public static ArrayList<String> archivedAlerts = new ArrayList<>();
@@ -64,16 +68,16 @@ public class SVFRMS {
             sensorLogs.add(new Date()+" : "+message);
         }
         else if(type.equals("ALERT_LOG")){
-            System.out.println("[" + chamber + "][" + crop + "][ALERT] " + message);
+            logger.info("[" + chamber + "][" + crop + "][ALERT] " + message);
         }
         else if(type.equals("CONTROL_LOG")){
-            System.out.println("\t\u001B[32m[" + chamber + "][CONTROL] " + message + "\u001B[0m");
+            logger.info("\t\u001B[32m[" + chamber + "][CONTROL] " + message + "\u001B[0m");
         }
         else if(type.equals("CREATE_ALERT")){
             alerts.add(message);
             totalAlerts++;
             totalAlertsGenerated++;
-            System.out.println("[" + chamber + "][" + crop + "][ALERT] " + message);
+            logger.info("[" + chamber + "][" + crop + "][ALERT] " + message);
         }
         else if(type.equals("TRACK_ALERT")){
             ChamberSummary summary = getChamberSummary(chamber);
@@ -207,11 +211,18 @@ public class SVFRMS {
     public static void generateDailyReport(){
         synchronized(alertLock){
             synchronized(reportLock){
-                System.out.println("===== DAILY REPORT =====");
-                System.out.println("Generated Alerts: "+totalAlertsGenerated);
-                System.out.println("Active Alerts: "+totalAlerts);
-                System.out.println("Water Usage: "+totalWaterUsage + " L");
-                System.out.println("Energy Usage: "+totalEnergyUsage + " kWh");
+                logger.info("""
+                        ===== DAILY REPORT =====
+                        Generated Alerts: %d
+                        Active Alerts: %d
+                        Water Usage: %d L
+                        Energy Usage: %d kWh
+                        """.formatted(
+                        totalAlertsGenerated,
+                        totalAlerts,
+                        totalWaterUsage,
+                        totalEnergyUsage
+                ));
                 reports.add("Daily Report");
             }
         }
@@ -231,10 +242,10 @@ public class SVFRMS {
                 if(!toArchive.isEmpty()){
                     archivedAlerts.addAll(toArchive);
                     reports.add("Archived " + toArchive.size() + " alerts");
-                    System.out.println("Archiving alerts... " + toArchive.size() + " moved to archive.");
+                    logger.info("Archiving alerts... " + toArchive.size() + " moved to archive.");
                 } else {
                     reports.add("No alerts to archive");
-                    System.out.println("Archiving alerts... no active alerts to archive.");
+                    logger.warning("Archiving alerts... no active alerts to archive.");
                 }
             }
         }
@@ -296,13 +307,13 @@ public class SVFRMS {
 
     public static void showAlerts(){
         for(String a: alerts){
-            System.out.println(a);
+            logger.info(a);
         }
     }
 
     public static void showLogs(){
         for(String s: sensorLogs){
-            System.out.println(s);
+            logger.info(s);
         }
     }
 
@@ -311,14 +322,19 @@ public class SVFRMS {
             Files.createDirectories(ARCHIVE_DIR);
 
             ArrayList<String> reportLines = new ArrayList<String>();
-            reportLines.add("===== DAILY REPORT =====");
-            reportLines.add("Timestamp: " + new Date());
-            reportLines.add("Generated Alerts: " + totalAlertsGenerated);
-            reportLines.add("Active Alerts: " + totalAlerts);
-            reportLines.add("Water Usage: " + totalWaterUsage + " L");
-            reportLines.add("Energy Usage: " + totalEnergyUsage + " kWh");
-            reportLines.add("Archived alerts: " + archivedAlerts.size());
-            reportLines.add("---");
+            reportLines.add("""
+                    ===== DAILY REPORT =====
+                    Timestamp: %s
+                    Generated Alerts: %d
+                    Active Alerts: %d
+                    Water Usage: %d L
+                    Energy Usage: %d kWh
+                    Archived alerts: %d
+                    ---
+                    """.formatted(
+                    new Date(), totalAlertsGenerated, totalAlerts,
+                    totalWaterUsage, totalEnergyUsage, archivedAlerts.size()
+            ));
             reportLines.addAll(reports);
 
             if (chamberSummaries.size() > 0) {
@@ -340,9 +356,9 @@ public class SVFRMS {
                     StandardOpenOption.TRUNCATE_EXISTING,
                     StandardOpenOption.WRITE);
 
-            System.out.println("Archive report saved to: " + REPORT_FILE.toAbsolutePath());
+            logger.info("Archive report saved to: " + REPORT_FILE.toAbsolutePath());
         } catch (Exception e) {
-            System.out.println("Could not save archive report: " + e.getMessage());
+            logger.warning("Could not save archive report: " + e.getMessage());
         }
     }   
 
@@ -387,7 +403,7 @@ public class SVFRMS {
 
         genReport.join();
         archiveAlerts.join();
-        System.out.println("System finished sensor processing.");
+        logger.info("System finished sensor processing.");
         saveArchiveReport();
     }
 }
