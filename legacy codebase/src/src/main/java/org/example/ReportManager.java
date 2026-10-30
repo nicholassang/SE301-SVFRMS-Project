@@ -66,10 +66,7 @@ public class ReportManager {
                 reportLines.addAll(archivedAlerts);
             }
 
-            Files.write(SVFRMS.REPORT_FILE, reportLines, StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING,
-                    StandardOpenOption.WRITE);
+            FileManager.saveReport(reportLines);
 
             logger.info("Archive report saved to: " + SVFRMS.REPORT_FILE.toAbsolutePath());
         } catch (Exception e) {
