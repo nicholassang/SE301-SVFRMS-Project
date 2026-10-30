@@ -6,9 +6,6 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class SVFRMS {
-    public static final Path ARCHIVE_DIR = Paths.get("archive");
-    public static final Path REPORT_FILE = ARCHIVE_DIR.resolve("daily_report.txt");
-
     private static final Logger logger = AppLogger.getLogger();
 
     public static ArrayList<String> sensorLogs = new ArrayList<>();
