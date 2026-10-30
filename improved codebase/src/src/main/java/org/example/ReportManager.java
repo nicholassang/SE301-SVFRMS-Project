@@ -25,7 +25,7 @@ public class ReportManager {
 
     public static void saveArchiveReport() {
         try {
-            Files.createDirectories(SVFRMS.ARCHIVE_DIR);
+            Files.createDirectories(FileManager.ARCHIVE_DIR);
 
             ArrayList<String> reportLines = new ArrayList<String>();
             reportLines.add("""
@@ -65,7 +65,7 @@ public class ReportManager {
 
             FileManager.saveReport(reportLines);
 
-            logger.info("Archive report saved to: " + SVFRMS.REPORT_FILE.toAbsolutePath());
+            logger.info("Archive report saved to: " + FileManager.REPORT_FILE.toAbsolutePath());
         } catch (Exception e) {
             logger.warning("Could not save archive report: " + e.getMessage());
         }
