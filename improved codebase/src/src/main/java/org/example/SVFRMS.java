@@ -26,12 +26,6 @@ public class SVFRMS {
 
     static Random random = new Random();
 
-    static class ChamberSummary {
-        int alerts = 0;
-        int mitigationActions = 0;
-        String lastAction = "No action";
-        String lastAlert = "None";
-    }
 
     public static ChamberState getChamberState(String chamber){
         if(!chamberStates.containsKey(chamber)){
