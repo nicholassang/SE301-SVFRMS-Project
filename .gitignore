@@ -1,0 +1,6 @@
+# Generated reports
+improved codebase/archive/daily_report.txt
+legacy codebase/archive/daily_report.txt
+
+# Java compiled files
+*.class
