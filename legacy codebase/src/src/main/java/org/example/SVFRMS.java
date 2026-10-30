@@ -11,8 +11,6 @@ public class SVFRMS {
 
     private static final Logger logger = AppLogger.getLogger();
 
-    public static ArrayList<String> alerts = new ArrayList<>();
-    public static ArrayList<String> archivedAlerts = new ArrayList<>();
     public static ArrayList<String> sensorLogs = new ArrayList<>();
     public static ArrayList<String> reports = new ArrayList<>();
     public static ArrayList<String> controlQueue = new ArrayList<>();
@@ -24,11 +22,8 @@ public class SVFRMS {
 
     public static int totalWaterUsage = 0;
     public static int totalEnergyUsage = 0;
-    public static int totalAlerts = 0;
-    public static int totalAlertsGenerated = 0;
 
     public static Object reportLock = new Object();
-    public static Object alertLock = new Object();
     public static Object waterPumpLock = new Object();
     public static Object nutrientLock = new Object();
 
@@ -74,9 +69,7 @@ public class SVFRMS {
             logger.info("\t\u001B[32m[" + chamber + "][CONTROL] " + message + "\u001B[0m");
         }
         else if(type.equals("CREATE_ALERT")){
-            alerts.add(message);
-            totalAlerts++;
-            totalAlertsGenerated++;
+            AlertManager.addAlert(message);
             logger.info("[" + chamber + "][" + crop + "][ALERT] " + message);
         }
         else if(type.equals("TRACK_ALERT")){
@@ -263,7 +256,7 @@ public class SVFRMS {
     }
 
     public static void showAlerts(){
-        for(String a: alerts){
+        for(String a: AlertManager.getActiveAlerts()){
             logger.info(a);
         }
     }
@@ -273,51 +266,6 @@ public class SVFRMS {
             logger.info(s);
         }
     }
-
-    public static void saveArchiveReport() {
-        try {
-            Files.createDirectories(ARCHIVE_DIR);
-
-            ArrayList<String> reportLines = new ArrayList<String>();
-            reportLines.add("""
-                    ===== DAILY REPORT =====
-                    Timestamp: %s
-                    Generated Alerts: %d
-                    Active Alerts: %d
-                    Water Usage: %d L
-                    Energy Usage: %d kWh
-                    Archived alerts: %d
-                    ---
-                    """.formatted(
-                    new Date(), totalAlertsGenerated, totalAlerts,
-                    totalWaterUsage, totalEnergyUsage, archivedAlerts.size()
-            ));
-            reportLines.addAll(reports);
-
-            if (chamberSummaries.size() > 0) {
-                reportLines.add("--- chamber wise summary ---");
-                TreeSet<String> sortedChambers = new TreeSet<String>(chamberSummaries.keySet());
-                for (String chamber : sortedChambers) {
-                    ChamberSummary summary = chamberSummaries.get(chamber);
-                    reportLines.add(chamber + " -> Alerts=" + summary.alerts + ", Actions=" + summary.mitigationActions + ", Last Action=" + summary.lastAction + ", Last Alert=" + summary.lastAlert);
-                }
-            }
-
-            if (archivedAlerts.size() > 0) {
-                reportLines.add("--- archived alerts ---");
-                reportLines.addAll(archivedAlerts);
-            }
-
-            Files.write(REPORT_FILE, reportLines, StandardCharsets.UTF_8,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING,
-                    StandardOpenOption.WRITE);
-
-            logger.info("Archive report saved to: " + REPORT_FILE.toAbsolutePath());
-        } catch (Exception e) {
-            logger.warning("Could not save archive report: " + e.getMessage());
-        }
-    }   
 
     public static void main(String[] args) throws Exception {
         Thread activateControlThread = new ControlThread();
@@ -343,21 +291,10 @@ public class SVFRMS {
         }
         activateControlThread.join();
 
-        Thread genReport = new Thread(() -> {
-            ReportManager.generateDailyReport();
-        });
+        ReportManager.generateDailyReport();
+        ArchiveManager.archiveAlerts();
 
-        Thread archiveAlerts = new Thread(() -> {
-            ArchiveManager.archiveAlerts();
-        });
-
-        archiveAlerts.start();
-        //Thread.sleep(20);
-        genReport.start();
-
-        genReport.join();
-        archiveAlerts.join();
         logger.info("System finished sensor processing.");
-        saveArchiveReport();
+        ReportManager.saveArchiveReport();
     }
 }
