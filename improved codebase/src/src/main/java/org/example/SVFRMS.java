@@ -26,14 +26,6 @@ public class SVFRMS {
 
     static Random random = new Random();
 
-    static class ChamberState {
-        double temperature = 24;
-        double humidity = 70;
-        double soilMoisture = 60;
-        double lightLevel = 600;
-        double nutrientLevel = 70;
-    }
-
     static class ChamberSummary {
         int alerts = 0;
         int mitigationActions = 0;
