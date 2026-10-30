@@ -16,8 +16,8 @@ public class ReportManager {
                     Energy Usage: %d kWh
                     """.formatted(
                     AlertManager.getAlertStatistics(),
-                    SVFRMS.totalWaterUsage,
-                    SVFRMS.totalEnergyUsage
+                    SVFRMS.usage.getTotalWater(),
+                    SVFRMS.usage.getTotalEnergy()
             ));
             SVFRMS.reports.add("Daily Report");
         }
@@ -41,18 +41,17 @@ public class ReportManager {
                     new Date(), 
                     AlertManager.getTotalAlertsGenerated(), 
                     AlertManager.getActiveAlertCount(),
-                    SVFRMS.totalWaterUsage, 
-                    SVFRMS.totalEnergyUsage, 
+                    SVFRMS.usage.getTotalWater(), 
+                    SVFRMS.usage.getTotalEnergy(), 
                     AlertManager.getArchivedAlerts().size()
             ));
             reportLines.addAll(SVFRMS.reports);
 
-            if (SVFRMS.chamberSummaries.size() > 0) {
+            ArrayList<String> chamberNames = SVFRMS.chambers.getChamberNames();
+            if (!chamberNames.isEmpty()) {
                 reportLines.add("--- chamber wise summary ---");
-                TreeSet<String> sortedChambers = new TreeSet<String>(SVFRMS.chamberSummaries.keySet());
-                for (String chamber : sortedChambers) {
-                    SVFRMS.ChamberSummary summary = SVFRMS.chamberSummaries.get(chamber);
-                    reportLines.add(chamber + " -> Alerts=" + summary.alerts + ", Actions=" + summary.mitigationActions + ", Last Action=" + summary.lastAction + ", Last Alert=" + summary.lastAlert);
+                for (String chamber : chamberNames) {
+                    reportLines.add(SVFRMS.chambers.getChamberSummary(chamber).toReportLine(chamber));
                 }
             }
 
