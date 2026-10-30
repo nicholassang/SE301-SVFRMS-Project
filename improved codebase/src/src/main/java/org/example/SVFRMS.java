@@ -55,36 +55,37 @@ public class SVFRMS {
                 double newTemp = state.adjust("Temperature", -5, 18, Double.MAX_VALUE);
                 handleEvent("TRACK_ACTION", chamber, "", "Cooling Fan Activated");
                 handleEvent("CONTROL_LOG", chamber, "", "Cooling Fan Activated");
-                handleEvent("CONTROL_LOG", chamber, "", "Temperature reduced to " + state.temperature + "C");
+                handleEvent("CONTROL_LOG", chamber, "", "Temperature reduced to " + newTemp + "C");
             }
             else if(control.equals("Water Pump")){
                 double newSoil = state.adjust("Soil", 20, -Double.MAX_VALUE, 100);
                 handleEvent("TRACK_ACTION", chamber, "", "Water Pump Activated");
                 handleEvent("CONTROL_LOG", chamber, "", "Water Pump Activated");
-                handleEvent("CONTROL_LOG", chamber, "", "Soil moisture increased to " + state.soilMoisture + "%");
+                handleEvent("CONTROL_LOG", chamber, "", "Soil moisture increased to " + newSoil + "%");
             }
             else if(control.equals("Nutrient Injector")){
-                double newNutrient = state.adjust("Nutrient", 15, -Double.MAX_VALUE, 100);                handleEvent("TRACK_ACTION", chamber, "", "Nutrient Injector Activated");
+                double newNutrient = state.adjust("Nutrient", 15, -Double.MAX_VALUE, 100);                
+                handleEvent("TRACK_ACTION", chamber, "", "Nutrient Injector Activated");
                 handleEvent("CONTROL_LOG", chamber, "", "Nutrient Injector Activated");
-                handleEvent("CONTROL_LOG", chamber, "", "Nutrient level increased to " + state.nutrientLevel + "%");
+                handleEvent("CONTROL_LOG", chamber, "", "Nutrient level increased to " + newNutrient + "%");
             }
             else if(control.equals("Humidifier")){
                 double newHumidity = state.adjust("Humidity", 10, -Double.MAX_VALUE, 100);
                 handleEvent("TRACK_ACTION", chamber, "", "Humidifier Activated");
                 handleEvent("CONTROL_LOG", chamber, "", "Humidifier Activated");
-                handleEvent("CONTROL_LOG", chamber, "", "Humidity increased to " + state.humidity + "%");
+                handleEvent("CONTROL_LOG", chamber, "", "Humidity increased to " + newHumidity + "%");
             }
             else if(control.equals("Dehumidifier")){
                 double newHumidity = state.adjust("Humidity", -10, 30, Double.MAX_VALUE);
                 handleEvent("TRACK_ACTION", chamber, "", "Dehumidifier Activated");
                 handleEvent("CONTROL_LOG", chamber, "", "Dehumidifier Activated");
-                handleEvent("CONTROL_LOG", chamber, "", "Humidity reduced to " + state.humidity + "%");
+                handleEvent("CONTROL_LOG", chamber, "", "Humidity reduced to " + newHumidity + "%");
             }
             else if(control.equals("Grow Light")){
                 double newLight = state.adjust("Light", 150, -Double.MAX_VALUE, 1000);
                 handleEvent("TRACK_ACTION", chamber, "", "Grow Light Activated");
                 handleEvent("CONTROL_LOG", chamber, "", "Grow Light Activated");
-                handleEvent("CONTROL_LOG", chamber, "", "Light level increased to " + state.lightLevel + " lux");
+                handleEvent("CONTROL_LOG", chamber, "", "Light level increased to " + newLight + " lux");
             }
     }
 
@@ -160,13 +161,6 @@ public class SVFRMS {
         }
     }
 
-    public static void irrigationCycle(){
-        totalWaterUsage += 100;
-    }
-
-    public static void feedingCycle(){
-        totalEnergyUsage += 20;
-    }
 
     static class ControlThread extends Thread{
         public void run(){
