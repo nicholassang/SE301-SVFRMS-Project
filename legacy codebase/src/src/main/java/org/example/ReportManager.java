@@ -8,9 +8,7 @@ public class ReportManager {
     private static final Logger logger = AppLogger.getLogger();
 
     public static void generateDailyReport() {
-
         synchronized (SVFRMS.reportLock) {
-
             logger.info("""
                     ===== DAILY REPORT =====
                     %s
@@ -21,7 +19,6 @@ public class ReportManager {
                     SVFRMS.totalWaterUsage,
                     SVFRMS.totalEnergyUsage
             ));
-
             SVFRMS.reports.add("Daily Report");
         }
     }

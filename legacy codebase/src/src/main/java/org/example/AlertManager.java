@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AlertManager {
-
     private static final ArrayList<String> alerts = new ArrayList<>();
     private static final ArrayList<String> archivedAlerts = new ArrayList<>();
-
     private static int totalAlertsGenerated = 0;
 
     public static synchronized void addAlert(String message) {
