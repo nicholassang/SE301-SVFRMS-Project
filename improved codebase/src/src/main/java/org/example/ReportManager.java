@@ -9,6 +9,7 @@ import java.time.ZoneId;
 public class ReportManager {
     private static final Logger logger = AppLogger.getLogger();
     private final ReportDataSource dataSource;
+    private final List<Report> reportsToGenerate;
 
     private final AlertManager alertManager;
     private final ArchiveManager archiveManager;
@@ -16,10 +17,25 @@ public class ReportManager {
     public ReportManager(
             AlertManager alertManager,
             ArchiveManager archiveManager,
-            ReportDataSource dataSource) {
+            ReportDataSource dataSource,
+            List<Report> reportsToGenerate) {
+
         this.alertManager = alertManager;
         this.archiveManager = archiveManager;
         this.dataSource = dataSource;
+        this.reportsToGenerate = new ArrayList<>(reportsToGenerate);
+    }
+
+    public void generateReports() {
+        for (Report report : reportsToGenerate) {
+            String reportContent = report.generate();
+
+            synchronized (SVFRMS.reportLock) {
+                SVFRMS.reports.add(reportContent);
+            }
+
+            logger.info(reportContent);
+        }
     }
 
     public void generateDailyReport() {

@@ -1,6 +1,7 @@
 
 package org.example;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -34,9 +35,20 @@ public class SVFRMS {
     public static final ReportDataSource reportDataSource =
             new SVFRMSReportDataSource(events, chambers, usage);
 
+    public static final Report dailyEnvironmentalReport =
+            new DailyEnvironmentalReport(reportDataSource, alertManager);
+
+    public static final Report weeklyCropReport =
+            new WeeklyCropReport(reportDataSource);
+
     public static final ReportManager reportManager =
-            new ReportManager(alertManager, archiveManager, reportDataSource);
-            
+            new ReportManager(
+                    alertManager,
+                    archiveManager,
+                    reportDataSource,
+                    List.of(dailyEnvironmentalReport, weeklyCropReport)
+            );
+
     // Processes control requests from the queue
     static class ControlTask implements Runnable {
         private final ControlQueue controlQueue;
@@ -130,9 +142,7 @@ public class SVFRMS {
         }
 
         alertManager.archiveAlerts();
-
-        reportManager.generateDailyReport();
-        reportManager.generateWeeklyCropReport();
+        reportManager.generateReports();
 
         logger.info("System finished sensor processing.");
         reportManager.saveArchiveReport();
