@@ -126,7 +126,9 @@ public class SVFRMS {
         }
 
         alertManager.archiveAlerts();
+
         reportManager.generateDailyReport();
+        reportManager.generateWeeklyCropReport();
 
         logger.info("System finished sensor processing.");
         reportManager.saveArchiveReport();

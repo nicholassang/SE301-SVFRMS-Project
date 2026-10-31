@@ -84,6 +84,72 @@ public class ReportManager {
         logger.info(report.toString());
     }
 
+    public void generateWeeklyCropReport() {
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(6);
+
+        Map<String, EnumMap<SensorType, ArrayList<SensorReading>>> cropReadings =
+                new TreeMap<>();
+
+        for (SensorReading reading : SVFRMS.events.getSensorReadings()) {
+            LocalDate readingDate = reading.getTimestamp()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            if (readingDate.isBefore(startDate) || readingDate.isAfter(today)) {
+                continue;
+            }
+
+            cropReadings
+                    .computeIfAbsent(reading.getCrop(),
+                            key -> new EnumMap<>(SensorType.class))
+                    .computeIfAbsent(reading.getSensor(),
+                            key -> new ArrayList<>())
+                    .add(reading);
+        }
+
+        StringBuilder report = new StringBuilder();
+
+        report.append("===== WEEKLY CROP REPORT =====\n");
+        report.append("Period: ").append(startDate)
+                .append(" to ").append(today).append("\n\n");
+
+        if (cropReadings.isEmpty()) {
+            report.append("No sensor readings available for this period.\n");
+        }
+
+        for (Map.Entry<String, EnumMap<SensorType, ArrayList<SensorReading>>> cropEntry
+                : cropReadings.entrySet()) {
+
+            report.append("--- Crop: ")
+                    .append(cropEntry.getKey())
+                    .append(" ---\n");
+
+            for (Map.Entry<SensorType, ArrayList<SensorReading>> sensorEntry
+                    : cropEntry.getValue().entrySet()) {
+
+                SensorStatistics stats = new SensorStatistics(sensorEntry.getValue());
+
+                report.append(String.format(
+                        "%s: Average=%.2f, Min=%.2f, Max=%.2f, Readings=%d%n",
+                        sensorEntry.getKey(),
+                        stats.getAverage(),
+                        stats.getMinimum(),
+                        stats.getMaximum(),
+                        stats.getCount()
+                ));
+            }
+
+            report.append("\n");
+        }
+
+        synchronized (SVFRMS.reportLock) {
+            SVFRMS.reports.add(report.toString());
+        }
+
+        logger.info(report.toString());
+    }
+
     public void saveArchiveReport() {
         try {
             Files.createDirectories(FileManager.ARCHIVE_DIR);
