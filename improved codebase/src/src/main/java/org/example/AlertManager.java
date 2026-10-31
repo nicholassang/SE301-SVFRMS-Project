@@ -2,10 +2,11 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class AlertManager {
+
     private final ArchiveManager archiveManager;
 
     private static final Logger logger = AppLogger.getLogger();
@@ -17,15 +18,26 @@ public class AlertManager {
         this.archiveManager = archiveManager;
     }
 
-    public synchronized boolean hasActiveAlert(
-            String chamber,
-            String crop,
-            String ruleId) {
+    // Atomically checks for an existing active alert and inserts if absent.
+    public synchronized boolean addAlertIfAbsent(Alert alert) {
 
-        return alerts.stream().anyMatch(alert ->
-                alert.getStatus() == AlertStatus.ACTIVE
-                && alert.matches(chamber, crop, ruleId)
+        boolean alreadyExists = alerts.stream().anyMatch(existing ->
+                existing.getStatus() == AlertStatus.ACTIVE
+                && existing.matches(
+                        alert.getChamber(),
+                        alert.getCrop(),
+                        alert.getType()
+                )
         );
+
+        if (alreadyExists) {
+            return false;
+        }
+
+        alerts.add(alert);
+        totalAlertsGenerated++;
+
+        return true;
     }
 
     public synchronized void resolveRecoveredAlerts(
@@ -35,6 +47,7 @@ public class AlertManager {
             Set<String> breachedRuleIds) {
 
         for (Alert alert : alerts) {
+
             boolean sameChamberAndCrop =
                     alert.matches(chamber, crop, alert.getType());
 
@@ -52,11 +65,6 @@ public class AlertManager {
                 alert.resolve();
             }
         }
-    }
-
-    public synchronized void addAlert(Alert alert) {
-        alerts.add(alert);
-        totalAlertsGenerated++;
     }
 
     public synchronized void resolveAlert(Alert alert) {
@@ -82,6 +90,7 @@ public class AlertManager {
     }
 
     public synchronized int archiveAlerts() {
+
         ArrayList<Alert> resolvedAlerts = new ArrayList<>();
 
         for (Alert alert : alerts) {
@@ -96,7 +105,9 @@ public class AlertManager {
                 a -> a.getStatus() == AlertStatus.ARCHIVED
         );
 
-        logger.info(resolvedAlerts.size() + " resolved alerts archived.");
+        logger.info(
+                resolvedAlerts.size() + " resolved alerts archived."
+        );
 
         return resolvedAlerts.size();
     }

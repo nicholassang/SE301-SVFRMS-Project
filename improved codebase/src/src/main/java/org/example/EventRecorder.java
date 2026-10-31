@@ -41,10 +41,12 @@ public class EventRecorder {
     public void recordAlert(Alert alert) {
         String message = alert.getMessage();
 
+        if (!alertManager.addAlertIfAbsent(alert)) {
+            return;
+        }
+
         chambers.getChamberSummary(alert.getChamber())
                 .recordAlert(message);
-
-        alertManager.addAlert(alert);
 
         logger.info(
                 "[" + alert.getChamber() + "]"

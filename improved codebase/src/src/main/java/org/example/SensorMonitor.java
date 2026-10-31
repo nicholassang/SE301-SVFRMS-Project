@@ -103,12 +103,7 @@ public class SensorMonitor {
             SensorType sensor,
             double value,
             Threshold threshold) {
-
         String ruleId = threshold.getRuleId();
-
-        if (alertManager.hasActiveAlert(chamber, cropName, ruleId)) {
-            return;
-        }
 
         String message = chamber + " " + threshold.getAlertLabel();
 
