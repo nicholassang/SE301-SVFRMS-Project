@@ -23,4 +23,9 @@ public class NutrientConsumptionReport implements Report {
 
         return report.toString();
     }
+
+    @Override
+    public String getFileName() {
+        return "nutrient_consumption_report.txt";
+    }
 }

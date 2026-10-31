@@ -23,4 +23,9 @@ public class WaterUsageReport implements Report {
 
         return report.toString();
     }
+
+    @Override
+    public String getFileName() {
+        return "water_usage_report.txt";
+    }
 }

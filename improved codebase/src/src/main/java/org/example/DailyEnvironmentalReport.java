@@ -75,4 +75,9 @@ public class DailyEnvironmentalReport implements Report {
 
         return report.toString();
     }
+
+    @Override
+    public String getFileName() {
+        return "daily_environmental_report.txt";
+    }
 }

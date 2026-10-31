@@ -23,4 +23,9 @@ public class EnergyConsumptionReport implements Report {
 
         return report.toString();
     }
+
+    @Override
+    public String getFileName() {
+        return "energy_consumption_report.txt";
+    }
 }

@@ -78,4 +78,9 @@ public class WeeklyCropReport implements Report {
 
         return report.toString();
     }
+
+    @Override
+    public String getFileName() {
+        return "weekly_crop_report.txt";
+    }
 }
