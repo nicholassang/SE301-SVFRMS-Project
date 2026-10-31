@@ -1,16 +1,15 @@
 package org.example;
-
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ArchiveManager {
-    private static final Logger logger = AppLogger.getLogger();
+    private static final ArrayList<String> archivedAlerts = new ArrayList<>();
 
-    public static void archiveAlerts() {
-        int count = AlertManager.archiveAlerts();
-        if (count > 0) {
-            logger.info(count + " alerts successfully archived.");
-        } else {
-            logger.info("No active alerts to archive.");
-        }
+    public static void archiveAlerts(ArrayList<String> newAlerts) {
+        archivedAlerts.addAll(newAlerts);
+    }
+
+    public static List<String> getArchivedAlerts() {
+        return new ArrayList<>(archivedAlerts);
     }
 }

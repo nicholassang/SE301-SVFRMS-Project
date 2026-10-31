@@ -43,7 +43,7 @@ public class ReportManager {
                     AlertManager.getActiveAlertCount(),
                     SVFRMS.usage.getTotalWater(), 
                     SVFRMS.usage.getTotalEnergy(), 
-                    AlertManager.getArchivedAlerts().size()
+                    ArchiveManager.getArchivedAlerts().size()
             ));
             reportLines.addAll(SVFRMS.reports);
 
@@ -55,7 +55,7 @@ public class ReportManager {
                 }
             }
 
-            List<String> archivedAlerts = AlertManager.getArchivedAlerts();
+            List<String> archivedAlerts = ArchiveManager.getArchivedAlerts();
 
             if (!archivedAlerts.isEmpty()) {
                 reportLines.add("--- archived alerts ---");

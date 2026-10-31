@@ -4,9 +4,12 @@ package org.example;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.logging.Logger;
+
 public class AlertManager {
+    private static final Logger logger = AppLogger.getLogger();
+
     private static final ArrayList<String> alerts = new ArrayList<>();
-    private static final ArrayList<String> archivedAlerts = new ArrayList<>();
     private static int totalAlertsGenerated = 0;
 
     public static synchronized void addAlert(String message) {
@@ -22,10 +25,6 @@ public class AlertManager {
         return totalAlertsGenerated;
     }
 
-    public static synchronized List<String> getArchivedAlerts() {
-        return new ArrayList<>(archivedAlerts);
-    }
-
     public static synchronized List<String> getActiveAlerts() {
         return new ArrayList<>(alerts);
     }
@@ -33,8 +32,14 @@ public class AlertManager {
     public static synchronized int archiveAlerts() {
         int count = alerts.size();
 
-        archivedAlerts.addAll(alerts);
-        alerts.clear();
+        if (count > 0) {
+            ArchiveManager.archiveAlerts(alerts);
+            alerts.clear();
+
+            logger.info(count + " alerts successfully archived.");
+        } else {
+            logger.info("No active alerts to archive.");
+        }
 
         return count;
     }
@@ -47,7 +52,7 @@ public class AlertManager {
                 """.formatted(
                 totalAlertsGenerated,
                 alerts.size(),
-                archivedAlerts.size()
+                ArchiveManager.getArchivedAlerts().size()
         );
     }
 }

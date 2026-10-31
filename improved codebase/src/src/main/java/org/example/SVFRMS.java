@@ -125,7 +125,7 @@ public class SVFRMS {
         }
         activateControlThread.join();
 
-        ArchiveManager.archiveAlerts();
+        AlertManager.archiveAlerts();
         ReportManager.generateDailyReport();
 
         logger.info("System finished sensor processing.");
