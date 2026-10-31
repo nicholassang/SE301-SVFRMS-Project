@@ -3,31 +3,31 @@ package org.example;
 // stating a rule to solve the hard coded rules for every crops 
 public class Threshold {
     private final SensorType sensor;
-    private final ThresholdType type;
+    private final ThresholdType thresholdType;
     private final double limit;
     private final String alertLabel;
-    private final ControlAction action;
+    private final ControlAction controlAction;
 
     public Threshold(
             SensorType sensor,
-            ThresholdType type,
+            ThresholdType thresholdType,
             double limit,
             String alertLabel,
-            ControlAction action) {
+            ControlAction controlAction) {
 
         this.sensor = sensor;
-        this.type = type;
+        this.thresholdType = thresholdType;
         this.limit = limit;
         this.alertLabel = alertLabel;
-        this.action = action;
+        this.controlAction = controlAction;
     }
 
     public String getAlertLabel(){
         return alertLabel;
     }
 
-    public ControlAction getAction() {
-        return action;
+    public ControlAction getControlAction() {
+        return controlAction;
     }
 
     public boolean isBreached(SensorType sensorName, double value) {
@@ -35,7 +35,7 @@ public class Threshold {
             return false;
         }
 
-        return switch (type) {
+        return switch (thresholdType) {
             case ABOVE -> value > limit;
             case BELOW -> value < limit;
         };

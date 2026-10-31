@@ -9,9 +9,9 @@ public class FacilityRules {
         rules.addRule(threshold);
     }
 
-    public ArrayList<Threshold> getBreaches(
+    public ArrayList<Threshold> findBreaches(
             SensorType sensor, double value) {
 
-        return rules.getBreaches(sensor, value);
+        return rules.findBreaches(sensor, value);
     }
 }

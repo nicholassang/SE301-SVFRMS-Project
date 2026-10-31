@@ -9,7 +9,7 @@ public class ThresholdRules {
         thresholds.add(threshold);
     }
 
-    public ArrayList<Threshold> getBreaches(
+    public ArrayList<Threshold> findBreaches(
             SensorType sensor, double value) {
 
         ArrayList<Threshold> result = new ArrayList<>();

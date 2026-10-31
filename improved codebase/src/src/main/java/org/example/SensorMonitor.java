@@ -54,10 +54,10 @@ public class SensorMonitor {
             double value) {
 
         ArrayList<Threshold> breaches =
-                crops.getCrop(cropName).getBreaches(sensor, value);
+                crops.getCrop(cropName).findBreaches(sensor, value);
 
         breaches.addAll(
-                crops.getFacilityRules().getBreaches(sensor, value)
+                crops.getFacilityRules().findBreaches(sensor, value)
         );
 
         return breaches;
@@ -73,7 +73,7 @@ public class SensorMonitor {
 
             events.recordAlert(chamber, cropName, message);
 
-            ControlAction action = t.getAction();
+            ControlAction action = t.getControlAction();
 
             usage.addWater(action.getWaterCost());
             usage.addEnergy(action.getEnergyCost());

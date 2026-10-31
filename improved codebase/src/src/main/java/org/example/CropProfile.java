@@ -16,7 +16,7 @@ public class CropProfile {
     }
 
     // add rules when the reading goes 'above' the limit
-    public void addAbove(SensorType sensor, double limit,
+    public void addUpperLimit(SensorType sensor, double limit,
                         String label, String device, int water, int energy) {
         rules.addRule(new Threshold(
             sensor,
@@ -28,7 +28,7 @@ public class CropProfile {
     }
 
     // add rules when the reading goes 'below' the limit
-    public void addBelow(SensorType sensor, double limit,
+    public void addLowerLimit(SensorType sensor, double limit,
                         String label, String device, int water, int energy) {
         rules.addRule(new Threshold(
             sensor,
@@ -45,7 +45,7 @@ public class CropProfile {
     }
 
     // return every rule it breaks when reading one sensor , ex. Tomato
-    public java.util.ArrayList<Threshold> getBreaches(SensorType sensor, double value) {
-        return rules.getBreaches(sensor, value);
+    public java.util.ArrayList<Threshold> findBreaches(SensorType sensor, double value) {
+        return rules.findBreaches(sensor, value);
     }
 }
