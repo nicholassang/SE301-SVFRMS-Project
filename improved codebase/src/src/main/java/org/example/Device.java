@@ -4,14 +4,14 @@ package org.example;
 // reading it changes by how much and its limits
 public class Device {
     private String name;          // e.g. "Cooling Fan"
-    private String sensor;        // e.g. "Temperature"
+    private SensorType sensor;        // e.g. "Temperature"
     private double change;        // e.g. -5
     private double min;
     private double max;
     private String messageStart;  // e.g. "Temperature reduced to "
     private String unit;          // e.g. "C"
 
-    public Device(String name, String sensor, double change, double min, double max,
+    public Device(String name, SensorType sensor, double change, double min, double max,
                   String messageStart, String unit){
         this.name = name;
         this.sensor = sensor;

@@ -23,7 +23,7 @@ public class SensorMonitor {
         this.events = events;
     }
 
-    public void processSensor(String chamber, String cropName, String sensor, double value){
+    public void processSensor(String chamber, String cropName, SensorType sensor, double value){
         events.logSensor("Processing " + cropName + " " + sensor + " = " + value);
         chambers.getChamberState(chamber).setState(sensor, value);
 

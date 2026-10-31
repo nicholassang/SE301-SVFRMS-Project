@@ -78,11 +78,11 @@ public class SVFRMS {
 
         public void run(){
             for(int i=0;i<20;i++){
-                monitor.processSensor(chamber,crop,"Temperature",10+random.nextInt(30));
-                monitor.processSensor(chamber,crop,"Humidity",40+random.nextInt(60));
-                monitor.processSensor(chamber,crop,"Soil",20+random.nextInt(60));
-                monitor.processSensor(chamber,crop,"Light",300+random.nextInt(900));
-                monitor.processSensor(chamber,crop,"Nutrient",20+random.nextInt(80));
+                monitor.processSensor(chamber,crop,SensorType.TEMPERATURE,10+random.nextInt(30));
+                monitor.processSensor(chamber,crop,SensorType.HUMIDITY,40+random.nextInt(60));
+                monitor.processSensor(chamber,crop,SensorType.SOIL,20+random.nextInt(60));
+                monitor.processSensor(chamber,crop,SensorType.LIGHT,300+random.nextInt(900));
+                monitor.processSensor(chamber,crop,SensorType.NUTRIENT,20+random.nextInt(80));
                 usage.addWater(2);
                 usage.addEnergy(1);
             }

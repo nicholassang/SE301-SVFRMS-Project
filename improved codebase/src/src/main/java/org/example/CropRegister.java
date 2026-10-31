@@ -35,48 +35,48 @@ public class CropRegister {
     // fix the giant if-else statement (SOLID --> Open Close, code smell --> DRY)
     private void loadDefaultCrops(){
         CropProfile tomato = new CropProfile("Tomato");
-        tomato.addAbove("Temperature", 28, "High Temp", "Cooling Fan", 0, 10);
-        tomato.addBelow("Temperature", 22, "Low Temp", null, 0, 15);
-        tomato.addAbove("Humidity", 80, "High Humidity", "Dehumidifier", 0, 0);
-        tomato.addBelow("Humidity", 60, "Low Humidity", "Humidifier", 20, 0);
-        tomato.addBelow("Soil", 45, "Low Soil Moisture", "Water Pump", 50, 0);
+        tomato.addAbove(SensorType.TEMPERATURE, 28, "High Temp", "Cooling Fan", 0, 10);
+        tomato.addBelow(SensorType.TEMPERATURE, 22, "Low Temp", null, 0, 15);
+        tomato.addAbove(SensorType.HUMIDITY, 80, "High Humidity", "Dehumidifier", 0, 0);
+        tomato.addBelow(SensorType.HUMIDITY, 60, "Low Humidity", "Humidifier", 20, 0);
+        tomato.addBelow(SensorType.SOIL, 45, "Low Soil Moisture", "Water Pump", 50, 0);
         addCrop(tomato);
 
         CropProfile strawberry = new CropProfile("Strawberry");
-        strawberry.addAbove("Temperature", 24, "High Temp", "Cooling Fan", 0, 10);
-        strawberry.addBelow("Temperature", 18, "Low Temp", null, 0, 15);
-        strawberry.addAbove("Humidity", 85, "High Humidity", "Dehumidifier", 0, 0);
-        strawberry.addBelow("Humidity", 70, "Low Humidity", "Humidifier", 25, 0);
+        strawberry.addAbove(SensorType.TEMPERATURE, 24, "High Temp", "Cooling Fan", 0, 10);
+        strawberry.addBelow(SensorType.TEMPERATURE, 18, "Low Temp", null, 0, 15);
+        strawberry.addAbove(SensorType.HUMIDITY, 85, "High Humidity", "Dehumidifier", 0, 0);
+        strawberry.addBelow(SensorType.HUMIDITY, 70, "Low Humidity", "Humidifier", 25, 0);
         addCrop(strawberry);
 
         CropProfile lettuce = new CropProfile("Lettuce");
-        lettuce.addAbove("Temperature", 21, "High Temp", "Cooling Fan", 0, 0);
-        lettuce.addBelow("Temperature", 15, "Low Temp", null, 0, 0);
+        lettuce.addAbove(SensorType.TEMPERATURE, 21, "High Temp", "Cooling Fan", 0, 0);
+        lettuce.addBelow(SensorType.TEMPERATURE, 15, "Low Temp", null, 0, 0);
         addCrop(lettuce);
 
         CropProfile spinach = new CropProfile("Spinach");
-        spinach.addAbove("Temperature", 20, "High Temp", "Cooling Fan", 0, 0);
-        spinach.addBelow("Temperature", 10, "Low Temp", null, 0, 0);
+        spinach.addAbove(SensorType.TEMPERATURE, 20, "High Temp", "Cooling Fan", 0, 0);
+        spinach.addBelow(SensorType.TEMPERATURE, 10, "Low Temp", null, 0, 0);
         addCrop(spinach);
 
         CropProfile chili = new CropProfile("Chili");
-        chili.addAbove("Temperature", 32, "High Temp", "Cooling Fan", 0, 0);
-        chili.addBelow("Temperature", 24, "Low Temp", null, 0, 0);
+        chili.addAbove(SensorType.TEMPERATURE, 32, "High Temp", "Cooling Fan", 0, 0);
+        chili.addBelow(SensorType.TEMPERATURE, 24, "Low Temp", null, 0, 0);
         addCrop(chili);
 
         CropProfile cucumber = new CropProfile("Cucumber");
-        cucumber.addAbove("Temperature", 27, "High Temp", "Cooling Fan", 0, 0);
-        cucumber.addBelow("Temperature", 18, "Low Temp", null, 0, 0);
+        cucumber.addAbove(SensorType.TEMPERATURE, 27, "High Temp", "Cooling Fan", 0, 0);
+        cucumber.addBelow(SensorType.TEMPERATURE, 18, "Low Temp", null, 0, 0);
         addCrop(cucumber);
 
         // these 2 rules applies to every crops
         facilityRules.addRule(new Threshold(
-            "Light", ThresholdType.BELOW, 500,
+            SensorType.LIGHT, ThresholdType.BELOW, 500,
             "Low Light Level", "Grow Light", 0, 0
         ));
 
         facilityRules.addRule(new Threshold(
-            "Nutrient", ThresholdType.BELOW, 40,
+            SensorType.NUTRIENT, ThresholdType.BELOW, 40,
             "Low Nutrient Level", "Nutrient Injector", 0, 0
         ));    
     }
