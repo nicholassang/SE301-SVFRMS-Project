@@ -59,8 +59,11 @@ public class SensorMonitor {
             SensorType sensor,
             double value) {
 
-        events.logSensor(
-                "Processing " + cropName + " " + sensor + " = " + value
+        events.recordSensorReading(
+                chamber,
+                cropName,
+                sensor,
+                value
         );
 
         chambers.getChamberState(chamber).setState(sensor, value);
