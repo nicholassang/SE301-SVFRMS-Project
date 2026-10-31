@@ -6,37 +6,29 @@ public class Threshold {
     private ThresholdType type; // true = alert when ABOVE, false = alert when BELOW
     private double limit;
     private String alertLabel;   // eg. "Tomato High Temp"
-    private String device;       // eg. Cooling Fan, or null if no device
-    private int waterCost;
-    private int energyCost; 
+    private ControlAction action;
 
-    public Threshold(SensorType sensor, ThresholdType type, double limit,
-                     String alertLabel, String device, int waterCost, int energyCost) {
+    public Threshold(
+            SensorType sensor,
+            ThresholdType type,
+            double limit,
+            String alertLabel,
+            ControlAction action) {
+
         this.sensor = sensor;
         this.type = type;
         this.limit = limit;
         this.alertLabel = alertLabel;
-        this.device = device;
-        this.waterCost = waterCost;
-        this.energyCost = energyCost;
+        this.action = action;
     }
 
     public String getAlertLabel(){
         return alertLabel;
     }
 
-    public String getDevice(){
-        return device;
+    public ControlAction getAction() {
+        return action;
     }
-
-    public int getWaterCost(){
-        return waterCost;
-    }
-
-    public int getEnergyCost(){
-        return energyCost;
-    }
-
 
     public boolean isBreached(SensorType sensorName, double value) {
         if(sensor != sensorName){

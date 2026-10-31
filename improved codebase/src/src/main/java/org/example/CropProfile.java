@@ -19,8 +19,11 @@ public class CropProfile {
     public void addAbove(SensorType sensor, double limit,
                         String label, String device, int water, int energy) {
         rules.addRule(new Threshold(
-            sensor, ThresholdType.ABOVE, limit,
-            name + " " + label, device, water, energy
+            sensor,
+            ThresholdType.ABOVE,
+            limit,
+            name + " " + label,
+            new ControlAction(device, water, energy)
         ));
     }
 
@@ -28,8 +31,11 @@ public class CropProfile {
     public void addBelow(SensorType sensor, double limit,
                         String label, String device, int water, int energy) {
         rules.addRule(new Threshold(
-            sensor, ThresholdType.BELOW, limit,
-            name + " " + label, device, water, energy
+            sensor,
+            ThresholdType.BELOW,
+            limit,
+            name + " " + label,
+            new ControlAction(device, water, energy)
         ));
     }
 

@@ -71,13 +71,19 @@ public class CropRegister {
 
         // these 2 rules applies to every crops
         facilityRules.addRule(new Threshold(
-            SensorType.LIGHT, ThresholdType.BELOW, 500,
-            "Low Light Level", "Grow Light", 0, 0
+            SensorType.LIGHT,
+            ThresholdType.BELOW,
+            500,
+            "Low Light Level",
+            new ControlAction("Grow Light", 0, 0)
         ));
 
         facilityRules.addRule(new Threshold(
-            SensorType.NUTRIENT, ThresholdType.BELOW, 40,
-            "Low Nutrient Level", "Nutrient Injector", 0, 0
-        ));    
+            SensorType.NUTRIENT,
+            ThresholdType.BELOW,
+            40,
+            "Low Nutrient Level",
+            new ControlAction("Nutrient Injector", 0, 0)
+        ));
     }
 }

@@ -73,11 +73,13 @@ public class SensorMonitor {
 
             events.recordAlert(chamber, cropName, message);
 
-            usage.addWater(t.getWaterCost());
-            usage.addEnergy(t.getEnergyCost());
+            ControlAction action = t.getAction();
 
-            if (t.getDevice() != null) {
-                SVFRMS.addControlRequest(chamber, t.getDevice());
+            usage.addWater(action.getWaterCost());
+            usage.addEnergy(action.getEnergyCost());
+
+            if (action.getDevice() != null) {
+                SVFRMS.addControlRequest(chamber, action.getDevice());
             }
         }
     }
