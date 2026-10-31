@@ -4,13 +4,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 // replace the activateControl in SVFRMS
-public class ControlService {
+public class ControlService implements ControlExecutor{
     // the control thread reads this on every request, addDevice() may write at any time
     private final Map<String, Device> devices = new ConcurrentHashMap<>();
     private final ChamberRepository chambers;
     private final EventRecorder events;
 
-    public ControlService(ChamberRepository chambers, EventRecorder events){
+    public ControlService(ChamberRepository chambers, EventRecorder events) {
         this.chambers = chambers;
         this.events = events;
         loadDefaultDevices();
@@ -20,6 +20,7 @@ public class ControlService {
         devices.put(device.getName(), device);
     }
 
+    @Override
     public void activateControl(String chamber, String deviceName){
         Device device = devices.get(deviceName);
         if (device == null) {

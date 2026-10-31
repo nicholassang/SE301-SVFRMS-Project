@@ -4,14 +4,15 @@ import java.util.List;
 
 public class SVFRMSReportDataSource implements ReportDataSource {
 
-    private final EventRecorder events;
+    private final EventRepository events;
     private final ChamberRepository chambers;
     private final ResourceUsageTracker usage;
 
     public SVFRMSReportDataSource(
-            EventRecorder events,
+            EventRepository events,
             ChamberRepository chambers,
             ResourceUsageTracker usage) {
+
         this.events = events;
         this.chambers = chambers;
         this.usage = usage;

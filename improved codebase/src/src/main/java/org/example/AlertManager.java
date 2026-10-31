@@ -105,12 +105,10 @@ public class AlertManager {
         return """
                 Generated Alerts: %d
                 Active Alerts: %d
-                Resolved Alerts: %d
                 Archived Alerts: %d
                 """.formatted(
                 totalAlertsGenerated,
                 getActiveAlertCount(),
-                alerts.size() - getActiveAlertCount(),
                 archiveManager.getArchivedAlerts().size()
         );
     }

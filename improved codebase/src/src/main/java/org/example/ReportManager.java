@@ -1,14 +1,14 @@
 package org.example;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+
 import java.util.*;
 import java.util.logging.Logger;
-import java.time.LocalDate;
-import java.time.ZoneId;
 
 public class ReportManager {
+
     private static final Logger logger = AppLogger.getLogger();
+
     private final ReportDataSource dataSource;
+    private final ReportExporter reportExporter;
     private final List<Report> reportsToGenerate;
 
     private final AlertManager alertManager;
@@ -18,23 +18,23 @@ public class ReportManager {
             AlertManager alertManager,
             ArchiveManager archiveManager,
             ReportDataSource dataSource,
+            ReportExporter reportExporter,
             List<Report> reportsToGenerate) {
 
         this.alertManager = alertManager;
         this.archiveManager = archiveManager;
         this.dataSource = dataSource;
+        this.reportExporter = reportExporter;
         this.reportsToGenerate = new ArrayList<>(reportsToGenerate);
     }
 
     public void generateReports() {
+
         for (Report report : reportsToGenerate) {
+
             String reportContent = report.generate();
 
-            synchronized (SVFRMS.reportLock) {
-                SVFRMS.reports.add(reportContent);
-            }
-
-            FileManager.saveReport(
+            reportExporter.export(
                     report.getFileName(),
                     reportContent
             );
@@ -44,10 +44,10 @@ public class ReportManager {
     }
 
     public void saveArchiveReport() {
-        try {
-            Files.createDirectories(FileManager.ARCHIVE_DIR);
 
-            ArrayList<String> reportLines = new ArrayList<String>();
+        try {
+            ArrayList<String> reportLines = new ArrayList<>();
+
             reportLines.add("""
                     ===== SYSTEM ARCHIVE SUMMARY =====
                     Timestamp: %s
@@ -55,29 +55,39 @@ public class ReportManager {
                     Active Alerts: %d
                     Water Usage: %d L
                     Energy Usage: %d kWh
-                    Archived alerts: %d
+                    Archived Alerts: %d
                     ---
                     """.formatted(
-                    new Date(), 
-                    alertManager.getTotalAlertsGenerated(), 
+                    new Date(),
+                    alertManager.getTotalAlertsGenerated(),
                     alertManager.getActiveAlertCount(),
-                    dataSource.getTotalWaterUsage(), 
-                    dataSource.getTotalEnergyUsage(), 
+                    dataSource.getTotalWaterUsage(),
+                    dataSource.getTotalEnergyUsage(),
                     archiveManager.getArchivedAlerts().size()
             ));
 
             List<String> chamberNames = dataSource.getChamberNames();
+
             if (!chamberNames.isEmpty()) {
-                reportLines.add("--- chamber wise summary ---");
+
+                reportLines.add("--- CHAMBER SUMMARIES ---");
+
                 for (String chamber : chamberNames) {
-                    reportLines.add(SVFRMS.chambers.getChamberSummary(chamber).toReportLine(chamber));
+                    reportLines.add(
+                            SVFRMS.chambers
+                                    .getChamberSummary(chamber)
+                                    .toReportLine(chamber)
+                    );
                 }
             }
 
-            List<Alert> archivedAlerts = archiveManager.getArchivedAlerts();
+            List<Alert> archivedAlerts =
+                    archiveManager.getArchivedAlerts();
 
             if (!archivedAlerts.isEmpty()) {
-                reportLines.add("--- archived alerts ---");
+
+                reportLines.add("--- ARCHIVED ALERTS ---");
+
                 for (Alert alert : archivedAlerts) {
                     reportLines.add(
                             "[" + alert.getSeverity() + "] "
@@ -88,9 +98,16 @@ public class ReportManager {
                     );
                 }
             }
-            FileManager.saveArchiveReport(reportLines);
+
+            reportExporter.export(
+                    "archive_report.txt",
+                    String.join(System.lineSeparator(), reportLines)
+            );
+
         } catch (Exception e) {
-            logger.warning("Could not save archive report: " + e.getMessage());
+            logger.warning(
+                    "Could not save archive report: " + e.getMessage()
+            );
         }
-    }   
+    }
 }
