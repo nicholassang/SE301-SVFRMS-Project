@@ -8,14 +8,14 @@ public class ControlService {
     private ChamberRepository chambers;
     private EventRecorder events;
 
-    public ControlService(ChamberRepository chamber, EventRecorder events){
+    public ControlService(ChamberRepository chambers, EventRecorder events){
         this.chambers = chambers;
         this.events = events;
         loadDefaultDevices();
     }
 
     public void addDevice(Device device){
-        device.put(device.getName(), device);
+        devices.put(device.getName(), device);
     }
 
     public void activateControl(String chamber, String deviceName){
