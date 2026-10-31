@@ -1,4 +1,3 @@
-
 package org.example;
 
 import java.util.*;
@@ -41,12 +40,27 @@ public class SVFRMS {
     public static final Report weeklyCropReport =
             new WeeklyCropReport(reportDataSource);
 
+    public static final Report waterUsageReport =
+            new WaterUsageReport(reportDataSource);
+
+    public static final Report energyConsumptionReport =
+            new EnergyConsumptionReport(reportDataSource);
+
+    public static final Report nutrientConsumptionReport =
+            new NutrientConsumptionReport(reportDataSource);
+
     public static final ReportManager reportManager =
             new ReportManager(
                     alertManager,
                     archiveManager,
                     reportDataSource,
-                    List.of(dailyEnvironmentalReport, weeklyCropReport)
+                    List.of(
+                            dailyEnvironmentalReport,
+                            weeklyCropReport,
+                            waterUsageReport,
+                            energyConsumptionReport,
+                            nutrientConsumptionReport
+                    )
             );
 
     // Processes control requests from the queue

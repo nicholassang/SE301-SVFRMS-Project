@@ -27,7 +27,7 @@ public class CropProfile {
                 ThresholdType.ABOVE,
                 limit,
                 name + " " + label,
-                new ControlAction(device, water, energy)
+                new ControlAction(device, water, energy, 0)
         ));
     }
 
@@ -39,7 +39,7 @@ public class CropProfile {
                 ThresholdType.BELOW,
                 limit,
                 name + " " + label,
-                new ControlAction(device, water, energy)
+                new ControlAction(device, water, energy, 0)
         ));
     }
 

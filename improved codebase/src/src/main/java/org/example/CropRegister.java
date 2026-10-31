@@ -80,7 +80,7 @@ public class CropRegister {
             ThresholdType.BELOW,
             500,
             "Low Light Level",
-            new ControlAction("Grow Light", 0, 0)
+            new ControlAction("Grow Light", 0, 0, 0)
         ));
 
         facilityRules.addRule(new Threshold(
@@ -88,7 +88,7 @@ public class CropRegister {
             ThresholdType.BELOW,
             40,
             "Low Nutrient Level",
-            new ControlAction("Nutrient Injector", 0, 0)
+            new ControlAction("Nutrient Injector", 0, 0, 15)
         ));
     }
 }

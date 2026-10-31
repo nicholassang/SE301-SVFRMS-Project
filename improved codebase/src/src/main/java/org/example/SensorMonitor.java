@@ -134,6 +134,7 @@ public class SensorMonitor {
 
         usage.addWater(action.getWaterCost());
         usage.addEnergy(action.getEnergyCost());
+        usage.addNutrient(action.getNutrientCost());
 
         if (action.getDevice() != null) {
             controlQueue.submit(chamber, action.getDevice());

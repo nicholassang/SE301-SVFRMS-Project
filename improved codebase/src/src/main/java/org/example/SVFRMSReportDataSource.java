@@ -36,4 +36,9 @@ public class SVFRMSReportDataSource implements ReportDataSource {
     public int getTotalEnergyUsage() {
         return usage.getTotalEnergy();
     }
+
+    @Override
+    public int getTotalNutrientUsage() {
+        return usage.getTotalNutrient();
+    }
 }

@@ -7,4 +7,5 @@ public interface ReportDataSource {
     List<String> getChamberNames();
     int getTotalWaterUsage();
     int getTotalEnergyUsage();
+    int getTotalNutrientUsage();
 }
