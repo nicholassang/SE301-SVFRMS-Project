@@ -138,20 +138,15 @@ public class SensorMonitor {
 
         Set<String> breachedRuleIds = new HashSet<>();
 
-        for (Threshold t : breaches) {
-            breachedRuleIds.add(t.getRuleId());
+        for (Threshold threshold : breaches) {
+            breachedRuleIds.add(threshold.getRuleId());
         }
 
-        for (Alert alert : AlertManager.getActiveAlerts()) {
-            boolean sameSensor =
-                    alert.getType().startsWith(sensor.name() + ":");
-
-            if (alert.matches(chamber, cropName, alert.getType())
-                    && sameSensor
-                    && !breachedRuleIds.contains(alert.getType())) {
-
-                AlertManager.resolveAlert(alert);
-            }
-        }
+        AlertManager.resolveRecoveredAlerts(
+                chamber,
+                cropName,
+                sensor,
+                breachedRuleIds
+        );
     }
 }

@@ -3,6 +3,7 @@ package org.example;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.Set;
 
 public class AlertManager {
     private static final Logger logger = AppLogger.getLogger();
@@ -19,6 +20,32 @@ public class AlertManager {
                 alert.getStatus() == AlertStatus.ACTIVE
                 && alert.matches(chamber, crop, ruleId)
         );
+    }
+
+    public static synchronized void resolveRecoveredAlerts(
+            String chamber,
+            String crop,
+            SensorType sensor,
+            Set<String> breachedRuleIds) {
+
+        for (Alert alert : alerts) {
+            boolean sameChamberAndCrop =
+                    alert.matches(chamber, crop, alert.getType());
+
+            boolean sameSensor =
+                    alert.getType().startsWith(sensor.name() + ":");
+
+            boolean recovered =
+                    !breachedRuleIds.contains(alert.getType());
+
+            if (alert.getStatus() == AlertStatus.ACTIVE
+                    && sameChamberAndCrop
+                    && sameSensor
+                    && recovered) {
+
+                alert.resolve();
+            }
+        }
     }
 
     public static synchronized void addAlert(Alert alert) {
