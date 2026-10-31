@@ -4,34 +4,31 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-/*
-DOES THE 5 THINGS IN OLD processSensor()
--Logs the reading.
--Saves it in the chamber state.
--Asks the crop which rules are broken.
--For each broken rule, records an alert and adds the water or energy cost.
--Sends a device request.
-*/
 public class SensorMonitor {
-    private ChamberRepository chambers;
-    private CropRegister crops;
-    private ResourceUsageTracker usage;
-    private EventRecorder events;
-    private final SeverityPolicy severityPolicy = new SeverityPolicy();
+
+    private final ChamberRepository chambers;
+    private final CropRegister crops;
+    private final ResourceUsageTracker usage;
+    private final EventRecorder events;
     private final AlertManager alertManager;
+    private final ControlQueue controlQueue;
+
+    private final SeverityPolicy severityPolicy = new SeverityPolicy();
 
     public SensorMonitor(
             ChamberRepository chambers,
             CropRegister crops,
             ResourceUsageTracker usage,
             EventRecorder events,
-            AlertManager alertManager) {
+            AlertManager alertManager,
+            ControlQueue controlQueue) {
 
         this.chambers = chambers;
         this.crops = crops;
         this.usage = usage;
         this.events = events;
         this.alertManager = alertManager;
+        this.controlQueue = controlQueue;
 
         severityPolicy.setLimits(SensorType.TEMPERATURE, 3, 7);
         severityPolicy.setLimits(SensorType.HUMIDITY, 5, 15);
@@ -62,7 +59,9 @@ public class SensorMonitor {
             SensorType sensor,
             double value) {
 
-        events.logSensor("Processing " + cropName + " " + sensor + " = " + value);
+        events.logSensor(
+                "Processing " + cropName + " " + sensor + " = " + value
+        );
 
         chambers.getChamberState(chamber).setState(sensor, value);
     }
@@ -109,9 +108,11 @@ public class SensorMonitor {
         }
 
         String message = chamber + " " + threshold.getAlertLabel();
+
         double deviation = threshold.calculateDeviation(value);
 
-        AlertSeverity severity = severityPolicy.evaluate(sensor, deviation);
+        AlertSeverity severity =
+                severityPolicy.evaluate(sensor, deviation);
 
         Alert alert = new Alert(
                 chamber,
@@ -124,12 +125,15 @@ public class SensorMonitor {
         events.recordAlert(alert);
     }
 
-    private void applyControlAction(String chamber, ControlAction action) {
+    private void applyControlAction(
+            String chamber,
+            ControlAction action) {
+
         usage.addWater(action.getWaterCost());
         usage.addEnergy(action.getEnergyCost());
 
         if (action.getDevice() != null) {
-            SVFRMS.addControlRequest(chamber, action.getDevice());
+            controlQueue.submit(chamber, action.getDevice());
         }
     }
 

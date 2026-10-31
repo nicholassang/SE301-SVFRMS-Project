@@ -1,99 +1,100 @@
-package org.example;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.util.*;
 
+package org.example;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public class SVFRMS {
     private static final Logger logger = AppLogger.getLogger();
 
-    public static ArrayList<String> reports = new ArrayList<>();
-    public static ArrayList<String> controlQueue = new ArrayList<>();
-    public static int controlQueueSize = 5;
-    public static volatile boolean controlThreadRunning = true;
+    public static final ArrayList<String> reports = new ArrayList<>();
+    public static final Object reportLock = new Object();
 
+    static final Random random = new Random();
 
+    public static final ChamberRepository chambers = new ChamberRepository();
+    public static final ResourceUsageTracker usage = new ResourceUsageTracker();
+    public static final CropRegister crops = new CropRegister();
 
-    public static Object reportLock = new Object();
-    // delete waterPumpLock and nutrientLock --> unused
+    // Shared dependency instances
+    public static final ArchiveManager archiveManager = new ArchiveManager();
+    public static final AlertManager alertManager = new AlertManager(archiveManager);
 
-    static Random random = new Random();
+    public static final EventRecorder events = new EventRecorder(chambers, alertManager);
 
+    public static final ControlQueue controlQueue = new ControlQueue();
 
-    public static ChamberRepository chambers = new ChamberRepository();
-    public static ResourceUsageTracker usage = new ResourceUsageTracker();
-    public static CropRegister crops = new CropRegister();
+    public static final SensorMonitor monitor = new SensorMonitor(chambers, crops, usage, events, alertManager, controlQueue);
 
-    public static ArchiveManager archiveManager = new ArchiveManager();
-    public static AlertManager alertManager = new AlertManager(archiveManager);
+    public static final ControlService controlService = new ControlService(chambers, events);
 
-    public static EventRecorder events =
-            new EventRecorder(chambers, alertManager);
+    public static final ReportManager reportManager = new ReportManager(alertManager, archiveManager);
 
-    public static SensorMonitor monitor =
-            new SensorMonitor(chambers, crops, usage, events, alertManager);
+    // Processes control requests from the queue
+    static class ControlTask implements Runnable {
+        private final ControlQueue controlQueue;
+        private final ControlService controlService;
 
-    public static ControlService controlService =
-            new ControlService(chambers, events);
-
-    public static ReportManager reportManager =
-            new ReportManager(alertManager, archiveManager);
-
-    
-
-    public static void addControlRequest(String chamber, String control){
-        synchronized(controlQueue){
-            while(controlQueue.size() == controlQueueSize){
-                try{controlQueue.wait();}catch(Exception e){}
-            }
-            controlQueue.add(chamber + "|" + control);
-            controlQueue.notifyAll();
+        ControlTask(ControlQueue controlQueue, ControlService controlService) {
+            this.controlQueue = controlQueue;
+            this.controlService = controlService;
         }
-    }
 
+        @Override
+        public void run() {
+            try {
+                ControlRequest request;
 
-
-    static class ControlThread extends Thread{
-        public void run(){
-            while(true){
-                String request;
-
-                synchronized(controlQueue){
-                    while(controlQueue.isEmpty() && controlThreadRunning){
-                        try{controlQueue.wait();}catch(Exception e){}
+                while ((request = controlQueue.next()) != null) {
+                    try {
+                        controlService.activateControl(
+                                request.chamber(),
+                                request.device()
+                        );
+                    } catch (RuntimeException e) {
+                        logger.warning(
+                                "Control request failed for " + request + ": " + e
+                        );
                     }
-
-                    if(controlQueue.isEmpty() && !controlThreadRunning){
-                        break;
-                    }
-
-                    request = controlQueue.remove(0);
-                    controlQueue.notifyAll();
                 }
-
-                String[] parts = request.split("\\|");
-                controlService.activateControl(parts[0], parts[1]);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }
 
-    static class ChamberThread extends Thread{
-        String chamber;
-        String crop;
+    // Simulates one chamber's sensor readings
+    static class ChamberTask implements Runnable {
+        private final String chamber;
+        private final String crop;
+        private final SensorMonitor monitor;
+        private final ResourceUsageTracker usage;
 
-        ChamberThread(String chamber,String crop){
-            this.chamber=chamber;
-            this.crop=crop;
+        ChamberTask(String chamber, String crop,
+                    SensorMonitor monitor, ResourceUsageTracker usage) {
+            this.chamber = chamber;
+            this.crop = crop;
+            this.monitor = monitor;
+            this.usage = usage;
         }
 
-        public void run(){
-            for(int i=0;i<20;i++){
-                monitor.processSensor(chamber,crop,SensorType.TEMPERATURE,10+random.nextInt(30));
-                monitor.processSensor(chamber,crop,SensorType.HUMIDITY,40+random.nextInt(60));
-                monitor.processSensor(chamber,crop,SensorType.SOIL,20+random.nextInt(60));
-                monitor.processSensor(chamber,crop,SensorType.LIGHT,300+random.nextInt(900));
-                monitor.processSensor(chamber,crop,SensorType.NUTRIENT,20+random.nextInt(80));
+        @Override
+        public void run() {
+            for (int i = 0; i < 20; i++) {
+                monitor.processSensor(chamber, crop, SensorType.TEMPERATURE,
+                        10 + random.nextInt(30));
+                monitor.processSensor(chamber, crop, SensorType.HUMIDITY,
+                        40 + random.nextInt(60));
+                monitor.processSensor(chamber, crop, SensorType.SOIL,
+                        20 + random.nextInt(60));
+                monitor.processSensor(chamber, crop, SensorType.LIGHT,
+                        300 + random.nextInt(900));
+                monitor.processSensor(chamber, crop, SensorType.NUTRIENT,
+                        20 + random.nextInt(80));
+
                 usage.addWater(2);
                 usage.addEnergy(1);
             }
@@ -101,28 +102,28 @@ public class SVFRMS {
     }
 
     public static void main(String[] args) throws Exception {
-        Thread activateControlThread = new ControlThread();
-        Thread t1 = new ChamberThread("CH1","Tomato");
-        Thread t2 = new ChamberThread("CH2","Strawberry");
-        Thread t3 = new ChamberThread("CH3","Lettuce");
-        Thread t4 = new ChamberThread("CH4","Chili");
+        try (ExecutorService controlThread =
+                     Executors.newSingleThreadExecutor()) {
 
-        activateControlThread.start();
-        t1.start();
-        t2.start();
-        t3.start();
-        t4.start();
+            controlThread.execute(
+                    new ControlTask(controlQueue, controlService)
+            );
 
-        t1.join();
-        t2.join();
-        t3.join();
-        t4.join();
+            try (ExecutorService chamberThreads =
+                         Executors.newFixedThreadPool(4)) {
 
-        synchronized(controlQueue){
-            controlThreadRunning = false;
-            controlQueue.notifyAll();
+                chamberThreads.execute(
+                        new ChamberTask("CH1", "Tomato", monitor, usage));
+                chamberThreads.execute(
+                        new ChamberTask("CH2", "Strawberry", monitor, usage));
+                chamberThreads.execute(
+                        new ChamberTask("CH3", "Lettuce", monitor, usage));
+                chamberThreads.execute(
+                        new ChamberTask("CH4", "Chili", monitor, usage));
+            }
+
+            controlQueue.stop();
         }
-        activateControlThread.join();
 
         alertManager.archiveAlerts();
         reportManager.generateDailyReport();

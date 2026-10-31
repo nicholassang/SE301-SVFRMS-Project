@@ -1,51 +1,63 @@
+
 package org.example;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-// Crops' profile plus its lists of rules from Threshold
 public class CropProfile {
     private final String name;
-    private final ThresholdRules rules = new ThresholdRules();
 
-    public CropProfile(String name){
+    private final List<Threshold> thresholds =
+            new CopyOnWriteArrayList<>();
+
+    public CropProfile(String name) {
         this.name = name;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    // add rules when the reading goes 'above' the limit
     public void addUpperLimit(SensorType sensor, double limit,
-                        String label, String device, int water, int energy) {
-        rules.addRule(new Threshold(
-            sensor,
-            ThresholdType.ABOVE,
-            limit,
-            name + " " + label,
-            new ControlAction(device, water, energy)
+                              String label, String device,
+                              int water, int energy) {
+        thresholds.add(new Threshold(
+                sensor,
+                ThresholdType.ABOVE,
+                limit,
+                name + " " + label,
+                new ControlAction(device, water, energy)
         ));
     }
 
-    // add rules when the reading goes 'below' the limit
     public void addLowerLimit(SensorType sensor, double limit,
-                        String label, String device, int water, int energy) {
-        rules.addRule(new Threshold(
-            sensor,
-            ThresholdType.BELOW,
-            limit,
-            name + " " + label,
-            new ControlAction(device, water, energy)
+                              String label, String device,
+                              int water, int energy) {
+        thresholds.add(new Threshold(
+                sensor,
+                ThresholdType.BELOW,
+                limit,
+                name + " " + label,
+                new ControlAction(device, water, energy)
         ));
     }
 
-    // Used for the rules that has no crop name
-    public void addRule(Threshold t) {
-        rules.addRule(t);
+    public void addRule(Threshold threshold) {
+        thresholds.add(threshold);
     }
 
-    // return every rule it breaks when reading one sensor , ex. Tomato
-    public java.util.ArrayList<Threshold> findBreaches(SensorType sensor, double value) {
-        return rules.findBreaches(sensor, value);
+    public ArrayList<Threshold> findBreaches(
+            SensorType sensor, double value) {
+
+        ArrayList<Threshold> breaches = new ArrayList<>();
+
+        for (Threshold threshold : thresholds) {
+            if (threshold.isBreached(sensor, value)) {
+                breaches.add(threshold);
+            }
+        }
+
+        return breaches;
     }
 }

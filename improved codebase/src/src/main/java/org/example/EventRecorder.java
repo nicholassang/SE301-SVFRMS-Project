@@ -13,8 +13,8 @@ public class EventRecorder {
     private static final String GREEN = "\u001B[32m";
     private static final String RESET = "\u001B[0m";
 
-    private ChamberRepository chambers;
-    private ArrayList<String> sensorLogs = new ArrayList<>();
+    private final ChamberRepository chambers;
+    private final ArrayList<String> sensorLogs = new ArrayList<>();   // guarded by synchronized methods
 
     public EventRecorder(
             ChamberRepository chambers,
