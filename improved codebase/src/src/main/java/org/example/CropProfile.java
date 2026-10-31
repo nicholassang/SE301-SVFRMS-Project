@@ -17,12 +17,28 @@ public class CropProfile {
 
     // add rules when the reading goes 'above' the limit
     public void addAbove(String sensor, double limit, String label, String device, int water, int energy) {
-        thresholds.add(new Threshold(sensor, true, limit, name + " " + label, device, water, energy));
+        thresholds.add(new Threshold(
+            sensor, 
+            ThresholdType.ABOVE, 
+            limit,
+            name + " " + label, 
+            device, 
+            water, 
+            energy
+        ));
     }
 
     // add rules when the reading goes 'below' the limit
     public void addBelow(String sensor, double limit, String label, String device, int water, int energy) {
-        thresholds.add(new Threshold(sensor, false, limit, name + " " + label, device, water, energy));
+        thresholds.add(new Threshold(
+            sensor, 
+            ThresholdType.BELOW, 
+            limit,
+            name + " " + label, 
+            device, 
+            water, 
+            energy
+        ));    
     }
 
     // Used for the rules that has no crop name

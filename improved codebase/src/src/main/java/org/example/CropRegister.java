@@ -70,8 +70,14 @@ public class CropRegister {
         addCrop(cucumber);
 
         // these 2 rules applies to every crops
-        facilityRules.addRule(new Threshold("Light", false, 500, "Low Light Level", "Grow Light", 0, 0));
-        facilityRules.addRule(new Threshold("Nutrient", false, 40, "Low Nutrient Level", "Nutrient Injector", 0, 0));
-    }
+        facilityRules.addRule(new Threshold(
+            "Light", ThresholdType.BELOW, 500,
+            "Low Light Level", "Grow Light", 0, 0
+        ));
 
+        facilityRules.addRule(new Threshold(
+            "Nutrient", ThresholdType.BELOW, 40,
+            "Low Nutrient Level", "Nutrient Injector", 0, 0
+        ));    
+    }
 }

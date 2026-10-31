@@ -3,17 +3,17 @@ package org.example;
 // stating a rule to solve the hard coded rules for every crops 
 public class Threshold {
     private String sensor;        // Temperature, humidity, etc
-    private boolean isUpperLimit; // true = alert when ABOVE, false = alert when BELOW
+    private ThresholdType type; // true = alert when ABOVE, false = alert when BELOW
     private double limit;
     private String alertLabel;   // eg. "Tomato High Temp"
     private String device;       // eg. Cooling Fan, or null if no device
     private int waterCost;
     private int energyCost; 
 
-    public Threshold(String sensor, boolean isUpperLimit, double limit,
+    public Threshold(String sensor, ThresholdType type, double limit,
                      String alertLabel, String device, int waterCost, int energyCost) {
         this.sensor = sensor;
-        this.isUpperLimit = isUpperLimit;
+        this.type = type;
         this.limit = limit;
         this.alertLabel = alertLabel;
         this.device = device;
@@ -43,10 +43,10 @@ public class Threshold {
             return false;
         }
 
-        if (isUpperLimit){
-             return value > limit;
-        }
-        return value < limit;
+        return switch (type) {
+            case ABOVE -> value > limit;
+            case BELOW -> value < limit;
+        };
     }
 
 
