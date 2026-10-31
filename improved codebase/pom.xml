@@ -16,6 +16,10 @@
     </properties>
 
     <build>
+        <!-- produces target/run.jar, as the submission requires -->
+        <finalName>run</finalName>
+        <!-- sources are one folder deeper than Maven's default src/main/java -->
+        <sourceDirectory>src/src/main/java</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -30,7 +34,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.SVFRMS</mainClass>
+                            <mainClass>org.example.app.SVFRMS</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

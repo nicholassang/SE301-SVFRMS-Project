@@ -1,6 +1,9 @@
-# Generated reports
-improved codebase/archive/
-legacy codebase/archive/
+# Generated reports (every report file the app writes)
+archive/
+
+# Build output: Maven (target/run.jar), run.bat / run-demo.sh (out/)
+target/
+out/
 
 # Java compiled files
 *.class
