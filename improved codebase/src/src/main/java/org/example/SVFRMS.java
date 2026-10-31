@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.concurrent.Future;
 
 public class SVFRMS {
 
@@ -101,48 +103,63 @@ public class SVFRMS {
     public static void main(String[] args) throws Exception {
 
         try (ExecutorService controlThread =
-                     Executors.newSingleThreadExecutor()) {
+                    Executors.newSingleThreadExecutor()) {
 
-            controlThread.execute(
+            Future<?> controlFuture = controlThread.submit(
                     new ControlTask(controlQueue, controlExecutor)
             );
 
-            try (ExecutorService chamberThreads =
-                         Executors.newFixedThreadPool(4)) {
+            try {
+                try (ExecutorService chamberThreads =
+                            Executors.newFixedThreadPool(4)) {
 
-                chamberThreads.execute(
-                        new ChamberTask(
-                                "CH1", "Tomato",
-                                monitor, sensorDataSource, usage
-                        )
-                );
+                    List<Future<?>> chamberFutures = new ArrayList<>();
 
-                chamberThreads.execute(
-                        new ChamberTask(
-                                "CH2", "Strawberry",
-                                monitor, sensorDataSource, usage
-                        )
-                );
+                    chamberFutures.add(chamberThreads.submit(
+                            new ChamberTask(
+                                    "CH1", "Tomato",
+                                    monitor, sensorDataSource, usage
+                            )
+                    ));
 
-                chamberThreads.execute(
-                        new ChamberTask(
-                                "CH3", "Lettuce",
-                                monitor, sensorDataSource, usage
-                        )
-                );
+                    chamberFutures.add(chamberThreads.submit(
+                            new ChamberTask(
+                                    "CH2", "Strawberry",
+                                    monitor, sensorDataSource, usage
+                            )
+                    ));
 
-                chamberThreads.execute(
-                        new ChamberTask(
-                                "CH4", "Chili",
-                                monitor, sensorDataSource, usage
-                        )
-                );
+                    chamberFutures.add(chamberThreads.submit(
+                            new ChamberTask(
+                                    "CH3", "Lettuce",
+                                    monitor, sensorDataSource, usage
+                            )
+                    ));
+
+                    chamberFutures.add(chamberThreads.submit(
+                            new ChamberTask(
+                                    "CH4", "Chili",
+                                    monitor, sensorDataSource, usage
+                            )
+                    ));
+
+                    // Wait for every chamber task and propagate failures.
+                    for (Future<?> future : chamberFutures) {
+                        future.get();
+                    }
+                }
+
+            } finally {
+                // Ensure the control consumer receives its shutdown request
+                // even if a chamber task fails.
+                controlQueue.stop();
             }
 
-            // All chamber tasks have finished; process remaining requests.
-            controlQueue.stop();
+            // Wait for all queued control requests to finish.
+            controlFuture.get();
         }
 
+        // Only generate reports after all processing has finished.
         alertManager.archiveAlerts();
 
         reportManager.generateReports();

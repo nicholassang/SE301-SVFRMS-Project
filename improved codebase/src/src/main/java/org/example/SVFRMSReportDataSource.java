@@ -29,6 +29,11 @@ public class SVFRMSReportDataSource implements ReportDataSource {
     }
 
     @Override
+    public ChamberSummary getChamberSummary(String chamber) {
+        return chambers.getChamberSummary(chamber);
+    }
+
+    @Override
     public int getTotalWaterUsage() {
         return usage.getTotalWater();
     }

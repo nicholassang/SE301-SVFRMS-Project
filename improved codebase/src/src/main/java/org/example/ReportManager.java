@@ -55,6 +55,7 @@ public class ReportManager {
                     Active Alerts: %d
                     Water Usage: %d L
                     Energy Usage: %d kWh
+                    Nutrient Usage: %d
                     Archived Alerts: %d
                     ---
                     """.formatted(
@@ -63,6 +64,7 @@ public class ReportManager {
                     alertManager.getActiveAlertCount(),
                     dataSource.getTotalWaterUsage(),
                     dataSource.getTotalEnergyUsage(),
+                    dataSource.getTotalNutrientUsage(),
                     archiveManager.getArchivedAlerts().size()
             ));
 
@@ -74,9 +76,8 @@ public class ReportManager {
 
                 for (String chamber : chamberNames) {
                     reportLines.add(
-                            SVFRMS.chambers
-                                    .getChamberSummary(chamber)
-                                    .toReportLine(chamber)
+                        dataSource.getChamberSummary(chamber)
+                                .toReportLine(chamber)
                     );
                 }
             }
