@@ -17,16 +17,23 @@ public class ChamberRepository {
         return chamberStates.get(chamber);
     }
 
+    public synchronized ArrayList<String> getChamberNames() {
+        ArrayList<String> names = new ArrayList<>(chamberStates.keySet());
+
+        for (String chamber : chamberSummaries.keySet()) {
+            if (!names.contains(chamber)) {
+                names.add(chamber);
+            }
+        }
+
+        Collections.sort(names);
+        return names;
+    }
+
     public synchronized ChamberSummary getChamberSummary(String chamber){
         if(!chamberSummaries.containsKey(chamber)){
             chamberSummaries.put(chamber, new ChamberSummary());
         }
         return chamberSummaries.get(chamber);
-    }
-
-    public synchronized ArrayList<String> getChamberNames(){
-        ArrayList<String> names = new ArrayList<>(chamberSummaries.keySet());
-        Collections.sort(names);
-        return names;
     }
 }

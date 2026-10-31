@@ -3,6 +3,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import java.util.logging.Logger;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class ReportManager {
     private static final Logger logger = AppLogger.getLogger();
@@ -19,19 +21,67 @@ public class ReportManager {
     }
 
     public void generateDailyReport() {
-        synchronized (SVFRMS.reportLock) {
-            logger.info("""
-                    ===== DAILY REPORT =====
-                    %s
-                    Water Usage: %d L
-                    Energy Usage: %d kWh
-                    """.formatted(
-                    alertManager.getAlertStatistics(),
-                    SVFRMS.usage.getTotalWater(),
-                    SVFRMS.usage.getTotalEnergy()
-            ));
-            SVFRMS.reports.add("Daily Report");
+        LocalDate today = LocalDate.now();
+        StringBuilder report = new StringBuilder();
+
+        report.append("===== DAILY ENVIRONMENTAL REPORT =====\n");
+        report.append("Date: ").append(today).append("\n\n");
+
+        report.append(alertManager.getAlertStatistics()).append("\n\n");
+
+        for (String chamber : SVFRMS.chambers.getChamberNames()) {
+            report.append("--- Chamber: ")
+                    .append(chamber)
+                    .append(" ---\n");
+
+            for (SensorType sensor : SensorType.values()) {
+                ArrayList<SensorReading> dailyReadings = new ArrayList<>();
+
+                for (SensorReading reading :
+                        SVFRMS.events.getSensorReadings(chamber, sensor)) {
+
+                    LocalDate readingDate = reading.getTimestamp()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+
+                    if (readingDate.equals(today)) {
+                        dailyReadings.add(reading);
+                    }
+                }
+
+                if (dailyReadings.isEmpty()) {
+                    continue;
+                }
+
+                SensorStatistics stats =
+                        new SensorStatistics(dailyReadings);
+
+                report.append(String.format(
+                        "%s: Average=%.2f, Min=%.2f, Max=%.2f, Readings=%d%n",
+                        sensor,
+                        stats.getAverage(),
+                        stats.getMinimum(),
+                        stats.getMaximum(),
+                        stats.getCount()
+                ));
+            }
+
+            report.append("\n");
         }
+
+        report.append("Water Usage: ")
+                .append(SVFRMS.usage.getTotalWater())
+                .append(" L\n");
+
+        report.append("Energy Usage: ")
+                .append(SVFRMS.usage.getTotalEnergy())
+                .append(" kWh\n");
+
+        synchronized (SVFRMS.reportLock) {
+            SVFRMS.reports.add(report.toString());
+        }
+
+        logger.info(report.toString());
     }
 
     public void saveArchiveReport() {

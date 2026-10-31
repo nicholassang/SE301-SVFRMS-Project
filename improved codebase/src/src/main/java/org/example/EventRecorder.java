@@ -25,6 +25,22 @@ public class EventRecorder {
         this.alertManager = alertManager;
     }
 
+    public synchronized ArrayList<SensorReading> getSensorReadings(
+            String chamber,
+            SensorType sensor) {
+
+        ArrayList<SensorReading> result = new ArrayList<>();
+
+        for (SensorReading reading : sensorReadings) {
+            if (reading.getChamber().equals(chamber)
+                    && reading.getSensor() == sensor) {
+                result.add(reading);
+            }
+        }
+
+        return result;
+    }
+
     public synchronized void recordSensorReading(
             String chamber,
             String crop,
