@@ -17,9 +17,12 @@ public class Alert {
 
     private AlertStatus status;
 
-    public Alert(String chamber, String crop,
-                 String type, String message,
-                 AlertSeverity severity) {
+    public Alert(
+            String chamber,
+            String crop,
+            String type,
+            String message,
+            AlertSeverity severity) {
 
         this.chamber = chamber;
         this.crop = crop;
@@ -31,18 +34,21 @@ public class Alert {
         this.status = AlertStatus.ACTIVE;
     }
 
-    public void resolve() {
+    public synchronized void resolve() {
         if (status == AlertStatus.ACTIVE) {
             status = AlertStatus.RESOLVED;
             resolvedAt = new Date();
         }
     }
 
-    public void archive() {
+    public synchronized boolean archive() {
         if (status == AlertStatus.RESOLVED) {
             status = AlertStatus.ARCHIVED;
             archivedAt = new Date();
+            return true;
         }
+
+        return false;
     }
 
     public String getChamber() {
@@ -66,18 +72,22 @@ public class Alert {
     }
 
     public Date getCreatedAt() {
-        return createdAt;
+        return new Date(createdAt.getTime());
     }
 
-    public Date getResolvedAt() {
-        return resolvedAt;
+    public synchronized Date getResolvedAt() {
+        return resolvedAt == null
+                ? null
+                : new Date(resolvedAt.getTime());
     }
 
-    public Date getArchivedAt() {
-        return archivedAt;
+    public synchronized Date getArchivedAt() {
+        return archivedAt == null
+                ? null
+                : new Date(archivedAt.getTime());
     }
 
-    public AlertStatus getStatus() {
+    public synchronized AlertStatus getStatus() {
         return status;
     }
 
