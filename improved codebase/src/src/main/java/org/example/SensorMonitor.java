@@ -18,17 +18,20 @@ public class SensorMonitor {
     private ResourceUsageTracker usage;
     private EventRecorder events;
     private final SeverityPolicy severityPolicy = new SeverityPolicy();
+    private final AlertManager alertManager;
 
     public SensorMonitor(
             ChamberRepository chambers,
             CropRegister crops,
             ResourceUsageTracker usage,
-            EventRecorder events) {
+            EventRecorder events,
+            AlertManager alertManager) {
 
         this.chambers = chambers;
         this.crops = crops;
         this.usage = usage;
         this.events = events;
+        this.alertManager = alertManager;
 
         severityPolicy.setLimits(SensorType.TEMPERATURE, 3, 7);
         severityPolicy.setLimits(SensorType.HUMIDITY, 5, 15);
@@ -101,7 +104,7 @@ public class SensorMonitor {
 
         String ruleId = threshold.getRuleId();
 
-        if (AlertManager.hasActiveAlert(chamber, cropName, ruleId)) {
+        if (alertManager.hasActiveAlert(chamber, cropName, ruleId)) {
             return;
         }
 
@@ -142,7 +145,7 @@ public class SensorMonitor {
             breachedRuleIds.add(threshold.getRuleId());
         }
 
-        AlertManager.resolveRecoveredAlerts(
+        alertManager.resolveRecoveredAlerts(
                 chamber,
                 cropName,
                 sensor,

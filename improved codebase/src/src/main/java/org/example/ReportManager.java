@@ -7,7 +7,18 @@ import java.util.logging.Logger;
 public class ReportManager {
     private static final Logger logger = AppLogger.getLogger();
 
-    public static void generateDailyReport() {
+    private final AlertManager alertManager;
+    private final ArchiveManager archiveManager;
+
+    public ReportManager(
+            AlertManager alertManager,
+            ArchiveManager archiveManager) {
+
+        this.alertManager = alertManager;
+        this.archiveManager = archiveManager;
+    }
+
+    public void generateDailyReport() {
         synchronized (SVFRMS.reportLock) {
             logger.info("""
                     ===== DAILY REPORT =====
@@ -15,7 +26,7 @@ public class ReportManager {
                     Water Usage: %d L
                     Energy Usage: %d kWh
                     """.formatted(
-                    AlertManager.getAlertStatistics(),
+                    alertManager.getAlertStatistics(),
                     SVFRMS.usage.getTotalWater(),
                     SVFRMS.usage.getTotalEnergy()
             ));
@@ -23,7 +34,7 @@ public class ReportManager {
         }
     }
 
-    public static void saveArchiveReport() {
+    public void saveArchiveReport() {
         try {
             Files.createDirectories(FileManager.ARCHIVE_DIR);
 
@@ -39,11 +50,11 @@ public class ReportManager {
                     ---
                     """.formatted(
                     new Date(), 
-                    AlertManager.getTotalAlertsGenerated(), 
-                    AlertManager.getActiveAlertCount(),
+                    alertManager.getTotalAlertsGenerated(), 
+                    alertManager.getActiveAlertCount(),
                     SVFRMS.usage.getTotalWater(), 
                     SVFRMS.usage.getTotalEnergy(), 
-                    ArchiveManager.getArchivedAlerts().size()
+                    archiveManager.getArchivedAlerts().size()
             ));
             reportLines.addAll(SVFRMS.reports);
 
@@ -55,7 +66,7 @@ public class ReportManager {
                 }
             }
 
-            List<Alert> archivedAlerts = ArchiveManager.getArchivedAlerts();
+            List<Alert> archivedAlerts = archiveManager.getArchivedAlerts();
 
             if (!archivedAlerts.isEmpty()) {
                 reportLines.add("--- archived alerts ---");

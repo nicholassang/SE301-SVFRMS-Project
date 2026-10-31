@@ -6,12 +6,18 @@ import java.util.logging.Logger;
 import java.util.Set;
 
 public class AlertManager {
+    private final ArchiveManager archiveManager;
+
     private static final Logger logger = AppLogger.getLogger();
 
-    private static final ArrayList<Alert> alerts = new ArrayList<>();
-    private static int totalAlertsGenerated = 0;
+    private final ArrayList<Alert> alerts = new ArrayList<>();
+    private int totalAlertsGenerated = 0;
 
-    public static synchronized boolean hasActiveAlert(
+    public AlertManager(ArchiveManager archiveManager) {
+        this.archiveManager = archiveManager;
+    }
+
+    public synchronized boolean hasActiveAlert(
             String chamber,
             String crop,
             String ruleId) {
@@ -22,7 +28,7 @@ public class AlertManager {
         );
     }
 
-    public static synchronized void resolveRecoveredAlerts(
+    public synchronized void resolveRecoveredAlerts(
             String chamber,
             String crop,
             SensorType sensor,
@@ -48,34 +54,34 @@ public class AlertManager {
         }
     }
 
-    public static synchronized void addAlert(Alert alert) {
+    public synchronized void addAlert(Alert alert) {
         alerts.add(alert);
         totalAlertsGenerated++;
     }
 
-    public static synchronized void resolveAlert(Alert alert) {
+    public synchronized void resolveAlert(Alert alert) {
         if (alerts.contains(alert)) {
             alert.resolve();
         }
     }
 
-    public static synchronized int getActiveAlertCount() {
+    public synchronized int getActiveAlertCount() {
         return (int) alerts.stream()
                 .filter(a -> a.getStatus() == AlertStatus.ACTIVE)
                 .count();
     }
 
-    public static synchronized int getTotalAlertsGenerated() {
+    public synchronized int getTotalAlertsGenerated() {
         return totalAlertsGenerated;
     }
 
-    public static synchronized List<Alert> getActiveAlerts() {
+    public synchronized List<Alert> getActiveAlerts() {
         return alerts.stream()
                 .filter(a -> a.getStatus() == AlertStatus.ACTIVE)
                 .toList();
     }
 
-    public static synchronized int archiveAlerts() {
+    public synchronized int archiveAlerts() {
         ArrayList<Alert> resolvedAlerts = new ArrayList<>();
 
         for (Alert alert : alerts) {
@@ -84,7 +90,7 @@ public class AlertManager {
             }
         }
 
-        ArchiveManager.archiveAlerts(resolvedAlerts);
+        archiveManager.archiveAlerts(resolvedAlerts);
 
         alerts.removeIf(
                 a -> a.getStatus() == AlertStatus.ARCHIVED
@@ -95,7 +101,7 @@ public class AlertManager {
         return resolvedAlerts.size();
     }
 
-    public static synchronized String getAlertStatistics() {
+    public synchronized String getAlertStatistics() {
         return """
                 Generated Alerts: %d
                 Active Alerts: %d
@@ -105,7 +111,7 @@ public class AlertManager {
                 totalAlertsGenerated,
                 getActiveAlertCount(),
                 alerts.size() - getActiveAlertCount(),
-                ArchiveManager.getArchivedAlerts().size()
+                archiveManager.getArchivedAlerts().size()
         );
     }
 }

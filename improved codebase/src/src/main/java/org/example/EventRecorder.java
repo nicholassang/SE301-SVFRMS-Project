@@ -7,6 +7,8 @@ import java.util.logging.Logger;
 
 // fix the ifelse in handleEvent
 public class EventRecorder {
+    private final AlertManager alertManager;
+
     private static final Logger logger = AppLogger.getLogger();
     private static final String GREEN = "\u001B[32m";
     private static final String RESET = "\u001B[0m";
@@ -14,8 +16,12 @@ public class EventRecorder {
     private ChamberRepository chambers;
     private ArrayList<String> sensorLogs = new ArrayList<>();
 
-    public EventRecorder(ChamberRepository chambers){
+    public EventRecorder(
+            ChamberRepository chambers,
+            AlertManager alertManager) {
+
         this.chambers = chambers;
+        this.alertManager = alertManager;
     }
 
     public synchronized void logSensor(String message){   // was LOG
@@ -28,7 +34,7 @@ public class EventRecorder {
         chambers.getChamberSummary(alert.getChamber())
                 .recordAlert(message);
 
-        AlertManager.addAlert(alert);
+        alertManager.addAlert(alert);
 
         logger.info(
             "[" + alert.getChamber() + "]"

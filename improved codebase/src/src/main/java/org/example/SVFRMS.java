@@ -22,12 +22,23 @@ public class SVFRMS {
 
 
     public static ChamberRepository chambers = new ChamberRepository();
-    public static EventRecorder events = new EventRecorder(chambers);
     public static ResourceUsageTracker usage = new ResourceUsageTracker();
     public static CropRegister crops = new CropRegister();
-    public static SensorMonitor monitor = new SensorMonitor(chambers, crops, usage, events);
-    public static ControlService controlService = new ControlService(chambers, events);
 
+    public static ArchiveManager archiveManager = new ArchiveManager();
+    public static AlertManager alertManager = new AlertManager(archiveManager);
+
+    public static EventRecorder events =
+            new EventRecorder(chambers, alertManager);
+
+    public static SensorMonitor monitor =
+            new SensorMonitor(chambers, crops, usage, events, alertManager);
+
+    public static ControlService controlService =
+            new ControlService(chambers, events);
+
+    public static ReportManager reportManager =
+            new ReportManager(alertManager, archiveManager);
 
     
 
@@ -113,10 +124,10 @@ public class SVFRMS {
         }
         activateControlThread.join();
 
-        AlertManager.archiveAlerts();
-        ReportManager.generateDailyReport();
+        alertManager.archiveAlerts();
+        reportManager.generateDailyReport();
 
         logger.info("System finished sensor processing.");
-        ReportManager.saveArchiveReport();
+        reportManager.saveArchiveReport();
     }
 }
