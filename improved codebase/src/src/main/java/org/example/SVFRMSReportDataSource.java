@@ -1,0 +1,39 @@
+package org.example;
+
+import java.util.List;
+
+public class SVFRMSReportDataSource implements ReportDataSource {
+
+    private final EventRecorder events;
+    private final ChamberRepository chambers;
+    private final ResourceUsageTracker usage;
+
+    public SVFRMSReportDataSource(
+            EventRecorder events,
+            ChamberRepository chambers,
+            ResourceUsageTracker usage) {
+        this.events = events;
+        this.chambers = chambers;
+        this.usage = usage;
+    }
+
+    @Override
+    public List<SensorReading> getSensorReadings() {
+        return events.getSensorReadings();
+    }
+
+    @Override
+    public List<String> getChamberNames() {
+        return chambers.getChamberNames();
+    }
+
+    @Override
+    public int getTotalWaterUsage() {
+        return usage.getTotalWater();
+    }
+
+    @Override
+    public int getTotalEnergyUsage() {
+        return usage.getTotalEnergy();
+    }
+}

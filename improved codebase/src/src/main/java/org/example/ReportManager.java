@@ -8,16 +8,18 @@ import java.time.ZoneId;
 
 public class ReportManager {
     private static final Logger logger = AppLogger.getLogger();
+    private final ReportDataSource dataSource;
 
     private final AlertManager alertManager;
     private final ArchiveManager archiveManager;
 
     public ReportManager(
             AlertManager alertManager,
-            ArchiveManager archiveManager) {
-
+            ArchiveManager archiveManager,
+            ReportDataSource dataSource) {
         this.alertManager = alertManager;
         this.archiveManager = archiveManager;
+        this.dataSource = dataSource;
     }
 
     public void generateDailyReport() {
@@ -29,7 +31,7 @@ public class ReportManager {
 
         report.append(alertManager.getAlertStatistics()).append("\n\n");
 
-        for (String chamber : SVFRMS.chambers.getChamberNames()) {
+        for (String chamber : dataSource.getChamberNames()) {
             report.append("--- Chamber: ")
                     .append(chamber)
                     .append(" ---\n");
@@ -70,11 +72,11 @@ public class ReportManager {
         }
 
         report.append("Water Usage: ")
-                .append(SVFRMS.usage.getTotalWater())
+                .append(dataSource.getTotalWaterUsage())
                 .append(" L\n");
 
         report.append("Energy Usage: ")
-                .append(SVFRMS.usage.getTotalEnergy())
+                .append(dataSource.getTotalEnergyUsage())
                 .append(" kWh\n");
 
         synchronized (SVFRMS.reportLock) {
@@ -91,7 +93,7 @@ public class ReportManager {
         Map<String, EnumMap<SensorType, ArrayList<SensorReading>>> cropReadings =
                 new TreeMap<>();
 
-        for (SensorReading reading : SVFRMS.events.getSensorReadings()) {
+        for (SensorReading reading : dataSource.getSensorReadings()) {
             LocalDate readingDate = reading.getTimestamp()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDate();
@@ -168,8 +170,8 @@ public class ReportManager {
                     new Date(), 
                     alertManager.getTotalAlertsGenerated(), 
                     alertManager.getActiveAlertCount(),
-                    SVFRMS.usage.getTotalWater(), 
-                    SVFRMS.usage.getTotalEnergy(), 
+                    dataSource.getTotalWaterUsage(), 
+                    dataSource.getTotalEnergyUsage(), 
                     archiveManager.getArchivedAlerts().size()
             ));
             // same lock as generateDailyReport(), every read and write of reports must hold it
@@ -177,7 +179,7 @@ public class ReportManager {
                 reportLines.addAll(SVFRMS.reports);
             }
 
-            ArrayList<String> chamberNames = SVFRMS.chambers.getChamberNames();
+            List<String> chamberNames = dataSource.getChamberNames();
             if (!chamberNames.isEmpty()) {
                 reportLines.add("--- chamber wise summary ---");
                 for (String chamber : chamberNames) {

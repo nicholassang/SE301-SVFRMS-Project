@@ -31,8 +31,12 @@ public class SVFRMS {
 
     public static final ControlService controlService = new ControlService(chambers, events);
 
-    public static final ReportManager reportManager = new ReportManager(alertManager, archiveManager);
+    public static final ReportDataSource reportDataSource =
+            new SVFRMSReportDataSource(events, chambers, usage);
 
+    public static final ReportManager reportManager =
+            new ReportManager(alertManager, archiveManager, reportDataSource);
+            
     // Processes control requests from the queue
     static class ControlTask implements Runnable {
         private final ControlQueue controlQueue;
