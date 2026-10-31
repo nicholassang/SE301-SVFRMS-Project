@@ -23,23 +23,62 @@ public class SensorMonitor {
         this.events = events;
     }
 
-    public void processSensor(String chamber, String cropName, SensorType sensor, double value){
+    public void processSensor(
+            String chamber,
+            String cropName,
+            SensorType sensor,
+            double value) {
+
+        logAndUpdateState(chamber, cropName, sensor, value);
+
+        ArrayList<Threshold> breaches =
+                findBreaches(cropName, sensor, value);
+
+        handleBreaches(chamber, cropName, breaches);
+    }
+
+    private void logAndUpdateState(
+            String chamber,
+            String cropName,
+            SensorType sensor,
+            double value) {
+
         events.logSensor("Processing " + cropName + " " + sensor + " = " + value);
+
         chambers.getChamberState(chamber).setState(sensor, value);
+    }
 
-        ArrayList<Threshold> breaches = crops.getCrop(cropName).getBreaches(sensor, value);
-        breaches.addAll(crops.getFacilityRules().getBreaches(sensor, value));
+    private ArrayList<Threshold> findBreaches(
+            String cropName,
+            SensorType sensor,
+            double value) {
 
-        for(Threshold t : breaches){
+        ArrayList<Threshold> breaches =
+                crops.getCrop(cropName).getBreaches(sensor, value);
+
+        breaches.addAll(
+                crops.getFacilityRules().getBreaches(sensor, value)
+        );
+
+        return breaches;
+    }
+
+    private void handleBreaches(
+            String chamber,
+            String cropName,
+            ArrayList<Threshold> breaches) {
+
+        for (Threshold t : breaches) {
             String message = chamber + " " + t.getAlertLabel();
+
             events.recordAlert(chamber, cropName, message);
+
             usage.addWater(t.getWaterCost());
             usage.addEnergy(t.getEnergyCost());
-            if(t.getDevice()!= null){
+
+            if (t.getDevice() != null) {
                 SVFRMS.addControlRequest(chamber, t.getDevice());
             }
         }
-    } 
-
-
+    }
 }
