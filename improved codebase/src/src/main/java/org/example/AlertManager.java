@@ -9,11 +9,11 @@ import java.util.logging.Logger;
 public class AlertManager {
     private static final Logger logger = AppLogger.getLogger();
 
-    private static final ArrayList<String> alerts = new ArrayList<>();
+    private static final ArrayList<Alert> alerts = new ArrayList<>();
     private static int totalAlertsGenerated = 0;
 
-    public static synchronized void addAlert(String message) {
-        alerts.add(message);
+    public static synchronized void addAlert(Alert alert) {
+        alerts.add(alert);
         totalAlertsGenerated++;
     }
 
@@ -25,7 +25,7 @@ public class AlertManager {
         return totalAlertsGenerated;
     }
 
-    public static synchronized List<String> getActiveAlerts() {
+    public static synchronized List<Alert> getActiveAlerts() {
         return new ArrayList<>(alerts);
     }
 

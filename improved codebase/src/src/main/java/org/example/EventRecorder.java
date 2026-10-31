@@ -22,10 +22,20 @@ public class EventRecorder {
         sensorLogs.add(new Date() + " : " + message);
     }
 
-    public void recordAlert(String chamber, String crop, String message){  // was TRACK_ALERT + CREATE_ALERT
-        chambers.getChamberSummary(chamber).recordAlert(message);
-        AlertManager.addAlert(message);
-        logger.info("[" + chamber + "][" + crop + "][ALERT] " + message);
+    public void recordAlert(Alert alert) {
+        String message = alert.getMessage();
+
+        chambers.getChamberSummary(alert.getChamber())
+                .recordAlert(message);
+
+        AlertManager.addAlert(alert);
+
+        logger.info(
+            "[" + alert.getChamber() + "]"
+            + "[" + alert.getCrop() + "]"
+            + "[" + alert.getSeverity() + "] "
+            + message
+        );
     }
 
     public void recordAction(String chamber, String action, String result){ // was TRACK_ACTION + CONTROL_LOG

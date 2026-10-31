@@ -22,6 +22,10 @@ public class Threshold {
         this.controlAction = controlAction;
     }
 
+    public double calculateDeviation(double value) {
+        return Math.abs(value - limit);
+    }
+
     public String getAlertLabel(){
         return alertLabel;
     }

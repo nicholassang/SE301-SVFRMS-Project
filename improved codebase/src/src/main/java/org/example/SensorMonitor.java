@@ -15,12 +15,24 @@ public class SensorMonitor {
     private CropRegister crops;
     private ResourceUsageTracker usage;
     private EventRecorder events;
+    private final SeverityPolicy severityPolicy = new SeverityPolicy();
 
-    public SensorMonitor(ChamberRepository chambers, CropRegister crops, ResourceUsageTracker usage, EventRecorder events){
+    public SensorMonitor(
+            ChamberRepository chambers,
+            CropRegister crops,
+            ResourceUsageTracker usage,
+            EventRecorder events) {
+
         this.chambers = chambers;
         this.crops = crops;
         this.usage = usage;
         this.events = events;
+
+        severityPolicy.setLimits(SensorType.TEMPERATURE, 3, 7);
+        severityPolicy.setLimits(SensorType.HUMIDITY, 5, 15);
+        severityPolicy.setLimits(SensorType.SOIL, 5, 15);
+        severityPolicy.setLimits(SensorType.LIGHT, 100, 300);
+        severityPolicy.setLimits(SensorType.NUTRIENT, 5, 15);
     }
 
     public void processSensor(
@@ -34,7 +46,7 @@ public class SensorMonitor {
         ArrayList<Threshold> breaches =
                 findBreaches(cropName, sensor, value);
 
-        handleBreaches(chamber, cropName, breaches);
+        handleBreaches(chamber, cropName, sensor, value, breaches);
     }
 
     private void logAndUpdateState(
@@ -66,12 +78,27 @@ public class SensorMonitor {
     private void handleBreaches(
             String chamber,
             String cropName,
+            SensorType sensor,
+            double value,
             ArrayList<Threshold> breaches) {
 
         for (Threshold t : breaches) {
             String message = chamber + " " + t.getAlertLabel();
 
-            events.recordAlert(chamber, cropName, message);
+            double deviation = t.calculateDeviation(value);
+
+            AlertSeverity severity =
+                    severityPolicy.evaluate(sensor, deviation);
+
+            Alert alert = new Alert(
+                    chamber,
+                    cropName,
+                    sensor.name(),
+                    message,
+                    severity
+            );
+
+            events.recordAlert(alert);
 
             ControlAction action = t.getControlAction();
 

@@ -8,7 +8,7 @@ public class Alert {
     private final String crop;
     private final String type;
     private final String message;
-    private final String severity;
+    private final AlertSeverity severity;
 
     private final Date createdAt;
 
@@ -19,7 +19,7 @@ public class Alert {
 
     public Alert(String chamber, String crop,
                  String type, String message,
-                 String severity) {
+                 AlertSeverity severity) {
 
         this.chamber = chamber;
         this.crop = crop;
@@ -61,7 +61,7 @@ public class Alert {
         return message;
     }
 
-    public String getSeverity() {
+    public AlertSeverity getSeverity() {
         return severity;
     }
 

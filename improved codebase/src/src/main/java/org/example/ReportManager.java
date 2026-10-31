@@ -55,11 +55,19 @@ public class ReportManager {
                 }
             }
 
-            List<String> archivedAlerts = ArchiveManager.getArchivedAlerts();
+            List<Alert> archivedAlerts = ArchiveManager.getArchivedAlerts();
 
             if (!archivedAlerts.isEmpty()) {
                 reportLines.add("--- archived alerts ---");
-                reportLines.addAll(archivedAlerts);
+                for (Alert alert : archivedAlerts) {
+                    reportLines.add(
+                            "[" + alert.getSeverity() + "] "
+                            + "[" + alert.getStatus() + "] "
+                            + "[" + alert.getChamber() + "] "
+                            + "[" + alert.getCrop() + "] "
+                            + alert.getMessage()
+                    );
+                }
             }
 
             FileManager.saveReport(reportLines);
