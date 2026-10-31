@@ -1,12 +1,14 @@
 package org.example;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 // replace the activateControl in SVFRMS
 public class ControlService {
-    private HashMap<String, Device> devices = new HashMap<>();
-    private ChamberRepository chambers;
-    private EventRecorder events;
+    // the control thread reads this on every request, addDevice() may write at any time
+    private final Map<String, Device> devices = new ConcurrentHashMap<>();
+    private final ChamberRepository chambers;
+    private final EventRecorder events;
 
     public ControlService(ChamberRepository chambers, EventRecorder events){
         this.chambers = chambers;

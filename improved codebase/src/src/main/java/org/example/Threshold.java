@@ -2,13 +2,14 @@ package org.example;
 
 // stating a rule to solve the hard coded rules for every crops 
 public class Threshold {
-    private String sensor;        // Temperature, humidity, etc
-    private boolean isUpperLimit; // true = alert when ABOVE, false = alert when BELOW
-    private double limit;
-    private String alertLabel;   // eg. "Tomato High Temp"
-    private String device;       // eg. Cooling Fan, or null if no device
-    private int waterCost;
-    private int energyCost; 
+    // all final: a rule never changes after creation, so the 4 chamber threads can share it without locking
+    private final String sensor;        // Temperature, humidity, etc
+    private final boolean isUpperLimit; // true = alert when ABOVE, false = alert when BELOW
+    private final double limit;
+    private final String alertLabel;   // eg. "Tomato High Temp"
+    private final String device;       // eg. Cooling Fan, or null if no device
+    private final int waterCost;
+    private final int energyCost;
 
     public Threshold(String sensor, boolean isUpperLimit, double limit,
                      String alertLabel, String device, int waterCost, int energyCost) {

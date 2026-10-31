@@ -3,13 +3,14 @@ package org.example;
 
 // reading it changes by how much and its limits
 public class Device {
-    private String name;          // e.g. "Cooling Fan"
-    private String sensor;        // e.g. "Temperature"
-    private double change;        // e.g. -5
-    private double min;
-    private double max;
-    private String messageStart;  // e.g. "Temperature reduced to "
-    private String unit;          // e.g. "C"
+    // all final: a Device never changes after creation, so threads can share it without locking
+    private final String name;          // e.g. "Cooling Fan"
+    private final String sensor;        // e.g. "Temperature"
+    private final double change;        // e.g. -5
+    private final double min;
+    private final double max;
+    private final String messageStart;  // e.g. "Temperature reduced to "
+    private final String unit;          // e.g. "C"
 
     public Device(String name, String sensor, double change, double min, double max,
                   String messageStart, String unit){

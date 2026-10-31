@@ -45,7 +45,10 @@ public class ReportManager {
                     SVFRMS.usage.getTotalEnergy(), 
                     AlertManager.getArchivedAlerts().size()
             ));
-            reportLines.addAll(SVFRMS.reports);
+            // same lock as generateDailyReport(), every read and write of reports must hold it
+            synchronized (SVFRMS.reportLock) {
+                reportLines.addAll(SVFRMS.reports);
+            }
 
             ArrayList<String> chamberNames = SVFRMS.chambers.getChamberNames();
             if (!chamberNames.isEmpty()) {

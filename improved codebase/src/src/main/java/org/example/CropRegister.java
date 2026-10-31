@@ -4,8 +4,8 @@ import java.util.HashMap;
 
 // where all the crops is with adding and removing new crops
 public class CropRegister {
-    private HashMap<String, CropProfile> crops = new HashMap<>();
-    private CropProfile facilityRules = new CropProfile("ALL"); // rules for every crop
+    private final HashMap<String, CropProfile> crops = new HashMap<>();   // guarded by synchronized methods
+    private final CropProfile facilityRules = new CropProfile("ALL"); // rules for every crop
 
 
     public CropRegister(){

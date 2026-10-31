@@ -3,7 +3,7 @@ package org.example;
 import java.util.HashMap;
 
 public class ChamberState {
-    private HashMap<String, Double> readings = new HashMap<>();
+    private final HashMap<String, Double> readings = new HashMap<>();   // guarded by synchronized methods
 
     // stores the current readings for one chamber
     public ChamberState(){

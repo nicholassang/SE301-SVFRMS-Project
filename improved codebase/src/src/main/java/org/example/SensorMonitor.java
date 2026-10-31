@@ -11,16 +11,19 @@ DOES THE 5 THINGS IN OLD processSensor()
 -Sends a device request.
 */
 public class SensorMonitor {
-    private ChamberRepository chambers;
-    private CropRegister crops;
-    private ResourceUsageTracker usage;
-    private EventRecorder events;
+    // final: set once in the constructor, then safely visible to all 4 chamber threads
+    private final ChamberRepository chambers;
+    private final CropRegister crops;
+    private final ResourceUsageTracker usage;
+    private final EventRecorder events;
+    private final ControlQueue controlQueue;
 
-    public SensorMonitor(ChamberRepository chambers, CropRegister crops, ResourceUsageTracker usage, EventRecorder events){
+    public SensorMonitor(ChamberRepository chambers, CropRegister crops, ResourceUsageTracker usage, EventRecorder events, ControlQueue controlQueue){
         this.chambers = chambers;
         this.crops = crops;
         this.usage = usage;
         this.events = events;
+        this.controlQueue = controlQueue;
     }
 
     public void processSensor(String chamber, String cropName, String sensor, double value){
@@ -36,7 +39,7 @@ public class SensorMonitor {
             usage.addWater(t.getWaterCost());
             usage.addEnergy(t.getEnergyCost());
             if(t.getDevice()!= null){
-                SVFRMS.addControlRequest(chamber, t.getDevice());
+                controlQueue.submit(chamber, t.getDevice());
             }
         }
     } 
