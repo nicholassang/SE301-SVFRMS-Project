@@ -22,6 +22,10 @@ public class Threshold {
         this.controlAction = controlAction;
     }
 
+    public String getRuleId() {
+        return sensor.name() + ":" + thresholdType.name() + ":" + limit;
+    }
+
     public double calculateDeviation(double value) {
         return Math.abs(value - limit);
     }

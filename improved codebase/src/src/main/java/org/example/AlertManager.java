@@ -10,6 +10,17 @@ public class AlertManager {
     private static final ArrayList<Alert> alerts = new ArrayList<>();
     private static int totalAlertsGenerated = 0;
 
+    public static synchronized boolean hasActiveAlert(
+            String chamber,
+            String crop,
+            String ruleId) {
+
+        return alerts.stream().anyMatch(alert ->
+                alert.getStatus() == AlertStatus.ACTIVE
+                && alert.matches(chamber, crop, ruleId)
+        );
+    }
+
     public static synchronized void addAlert(Alert alert) {
         alerts.add(alert);
         totalAlertsGenerated++;

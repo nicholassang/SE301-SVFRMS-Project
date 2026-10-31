@@ -1,6 +1,8 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
 DOES THE 5 THINGS IN OLD processSensor()
@@ -47,6 +49,8 @@ public class SensorMonitor {
                 findBreaches(cropName, sensor, value);
 
         handleBreaches(chamber, cropName, sensor, value, breaches);
+
+        resolveRecoveredAlerts(chamber, cropName, sensor, breaches);
     }
 
     private void logAndUpdateState(
@@ -82,31 +86,71 @@ public class SensorMonitor {
             double value,
             ArrayList<Threshold> breaches) {
 
+        for (Threshold threshold : breaches) {
+            recordBreachAlert(chamber, cropName, sensor, value, threshold);
+            applyControlAction(chamber, threshold.getControlAction());
+        }
+    }
+
+    private void recordBreachAlert(
+            String chamber,
+            String cropName,
+            SensorType sensor,
+            double value,
+            Threshold threshold) {
+
+        String ruleId = threshold.getRuleId();
+
+        if (AlertManager.hasActiveAlert(chamber, cropName, ruleId)) {
+            return;
+        }
+
+        String message = chamber + " " + threshold.getAlertLabel();
+        double deviation = threshold.calculateDeviation(value);
+
+        AlertSeverity severity = severityPolicy.evaluate(sensor, deviation);
+
+        Alert alert = new Alert(
+                chamber,
+                cropName,
+                ruleId,
+                message,
+                severity
+        );
+
+        events.recordAlert(alert);
+    }
+
+    private void applyControlAction(String chamber, ControlAction action) {
+        usage.addWater(action.getWaterCost());
+        usage.addEnergy(action.getEnergyCost());
+
+        if (action.getDevice() != null) {
+            SVFRMS.addControlRequest(chamber, action.getDevice());
+        }
+    }
+
+    private void resolveRecoveredAlerts(
+            String chamber,
+            String cropName,
+            SensorType sensor,
+            ArrayList<Threshold> breaches) {
+
+        Set<String> breachedRuleIds = new HashSet<>();
+
         for (Threshold t : breaches) {
-            String message = chamber + " " + t.getAlertLabel();
+            breachedRuleIds.add(t.getRuleId());
+        }
 
-            double deviation = t.calculateDeviation(value);
+        for (Alert alert : AlertManager.getActiveAlerts()) {
+            boolean sameSensor =
+                    alert.getType().startsWith(sensor.name() + ":");
 
-            AlertSeverity severity =
-                    severityPolicy.evaluate(sensor, deviation);
+            if (alert.matches(chamber, cropName, alert.getType())
+                    && sameSensor
+                    && !breachedRuleIds.contains(alert.getType())) {
 
-            Alert alert = new Alert(
-                    chamber,
-                    cropName,
-                    sensor.name(),
-                    message,
-                    severity
-            );
-
-            events.recordAlert(alert);
-
-            ControlAction action = t.getControlAction();
-
-            usage.addWater(action.getWaterCost());
-            usage.addEnergy(action.getEnergyCost());
-
-            if (action.getDevice() != null) {
-                SVFRMS.addControlRequest(chamber, action.getDevice());
+                AlertManager.resolveAlert(alert);
             }
         }
     }
