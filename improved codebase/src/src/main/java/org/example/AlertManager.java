@@ -1,9 +1,7 @@
-
 package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.logging.Logger;
 
 public class AlertManager {
@@ -17,8 +15,16 @@ public class AlertManager {
         totalAlertsGenerated++;
     }
 
+    public static synchronized void resolveAlert(Alert alert) {
+        if (alerts.contains(alert)) {
+            alert.resolve();
+        }
+    }
+
     public static synchronized int getActiveAlertCount() {
-        return alerts.size();
+        return (int) alerts.stream()
+                .filter(a -> a.getStatus() == AlertStatus.ACTIVE)
+                .count();
     }
 
     public static synchronized int getTotalAlertsGenerated() {
@@ -26,32 +32,41 @@ public class AlertManager {
     }
 
     public static synchronized List<Alert> getActiveAlerts() {
-        return new ArrayList<>(alerts);
+        return alerts.stream()
+                .filter(a -> a.getStatus() == AlertStatus.ACTIVE)
+                .toList();
     }
 
     public static synchronized int archiveAlerts() {
-        int count = alerts.size();
+        ArrayList<Alert> resolvedAlerts = new ArrayList<>();
 
-        if (count > 0) {
-            ArchiveManager.archiveAlerts(alerts);
-            alerts.clear();
-
-            logger.info(count + " alerts successfully archived.");
-        } else {
-            logger.info("No active alerts to archive.");
+        for (Alert alert : alerts) {
+            if (alert.getStatus() == AlertStatus.RESOLVED) {
+                resolvedAlerts.add(alert);
+            }
         }
 
-        return count;
+        ArchiveManager.archiveAlerts(resolvedAlerts);
+
+        alerts.removeIf(
+                a -> a.getStatus() == AlertStatus.ARCHIVED
+        );
+
+        logger.info(resolvedAlerts.size() + " resolved alerts archived.");
+
+        return resolvedAlerts.size();
     }
 
     public static synchronized String getAlertStatistics() {
         return """
                 Generated Alerts: %d
                 Active Alerts: %d
+                Resolved Alerts: %d
                 Archived Alerts: %d
                 """.formatted(
                 totalAlertsGenerated,
-                alerts.size(),
+                getActiveAlertCount(),
+                alerts.size() - getActiveAlertCount(),
                 ArchiveManager.getArchivedAlerts().size()
         );
     }

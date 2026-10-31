@@ -80,4 +80,14 @@ public class Alert {
     public AlertStatus getStatus() {
         return status;
     }
+
+    public boolean matches(
+            String chamber,
+            String crop,
+            String type) {
+
+        return this.chamber.equals(chamber)
+                && this.crop.equals(crop)
+                && this.type.equals(type);
+    }
 }
