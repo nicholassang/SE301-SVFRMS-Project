@@ -33,5 +33,5 @@ public class Device {
         return messageStart + newValue + unit;
     }
 
-    
+
 }

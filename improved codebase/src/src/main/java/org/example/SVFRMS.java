@@ -89,18 +89,6 @@ public class SVFRMS {
         }
     }
 
-    public static void showAlerts(){
-        for(String a: AlertManager.getActiveAlerts()){
-            logger.info(a);
-        }
-    }
-
-    public static void showLogs(){
-        for(String s: events.getSensorLogs()){
-            logger.info(s);
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         Thread activateControlThread = new ControlThread();
         Thread t1 = new ChamberThread("CH1","Tomato");
