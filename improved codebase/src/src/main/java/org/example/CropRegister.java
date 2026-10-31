@@ -20,10 +20,15 @@ public class CropRegister {
     }
 
     public synchronized CropProfile getCrop(String name) {
-        if(crops.containsKey(name)){
-            return crops.get(name);
-        } 
-        return new CropProfile(name);   // unknown crop = no crop rules
+        CropProfile crop = crops.get(name);
+
+        if (crop == null) {
+            throw new IllegalArgumentException(
+                "Unknown crop: " + name
+            );
+        }
+
+        return crop;
     }
 
 
