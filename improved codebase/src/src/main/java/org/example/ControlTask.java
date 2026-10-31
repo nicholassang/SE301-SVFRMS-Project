@@ -19,21 +19,27 @@ public class ControlTask implements Runnable {
 
     @Override
     public void run() {
+
         try {
             ControlRequest request;
 
             while ((request = controlQueue.next()) != null) {
+
                 try {
                     controlExecutor.activateControl(
                             request.chamber(),
-                            request.device()
+                            request.action()
                     );
+
                 } catch (RuntimeException e) {
                     logger.warning(
-                            "Control request failed for " + request + ": " + e
+                            "Control request failed for "
+                                    + request.chamber()
+                                    + ": " + e
                     );
                 }
             }
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

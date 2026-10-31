@@ -4,40 +4,52 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Logger;
 
-// bounded hand-off between the chamber threads (producers) and the control thread (consumer)
-// replaces the ArrayList + wait/notifyAll that used to live in SVFRMS
 public class ControlQueue {
+
     private static final Logger logger = AppLogger.getLogger();
     private static final int CAPACITY = 5;
 
-    // "poison pill": tells the control thread to stop, compared by reference (==) so no real request can match it
-    private static final ControlRequest STOP = new ControlRequest("STOP", "STOP");
+    // Special request used to shut down the consumer.
+    private static final ControlRequest STOP =
+            new ControlRequest(
+                    "STOP",
+                    new ControlAction("STOP", 0, 0, 0)
+            );
 
-    // ArrayBlockingQueue does the locking and waiting for us
-    private final BlockingQueue<ControlRequest> queue = new ArrayBlockingQueue<>(CAPACITY);
+    private final BlockingQueue<ControlRequest> queue =
+            new ArrayBlockingQueue<>(CAPACITY);
 
-    // called by chamber threads, waits while the queue is full
-    public void submit(String chamber, String device) {
+    // Returns true if the request was successfully queued.
+    public boolean submit(String chamber, ControlAction action) {
+
         try {
-            queue.put(new ControlRequest(chamber, device));
+            queue.put(new ControlRequest(chamber, action));
+            return true;
+
         } catch (InterruptedException e) {
-            // keep the interrupt so the calling thread can still see it was asked to stop
             Thread.currentThread().interrupt();
-            logger.warning("Interrupted while queueing " + device + " for " + chamber);
+
+            logger.warning(
+                    "Interrupted while queueing control action for " + chamber
+            );
+
+            return false;
         }
     }
 
-    // called by the control thread, waits while the queue is empty
-    // returns null once stop() was called and every earlier request has been handed out
+    // Returns null when the STOP request is received.
     public ControlRequest next() throws InterruptedException {
+
         ControlRequest request = queue.take();
+
         if (request == STOP) {
             return null;
         }
+
         return request;
     }
 
-    // called by main after all chambers finish, requests already queued are still processed first
+    // Called after all producer threads finish.
     public void stop() throws InterruptedException {
         queue.put(STOP);
     }

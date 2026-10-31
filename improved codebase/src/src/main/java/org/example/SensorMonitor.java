@@ -8,7 +8,6 @@ public class SensorMonitor {
 
     private final ChamberRepository chambers;
     private final CropRegister crops;
-    private final ResourceUsageTracker usage;
     private final EventRecorder events;
     private final AlertManager alertManager;
     private final ControlQueue controlQueue;
@@ -18,14 +17,12 @@ public class SensorMonitor {
     public SensorMonitor(
             ChamberRepository chambers,
             CropRegister crops,
-            ResourceUsageTracker usage,
             EventRecorder events,
             AlertManager alertManager,
             ControlQueue controlQueue) {
 
         this.chambers = chambers;
         this.crops = crops;
-        this.usage = usage;
         this.events = events;
         this.alertManager = alertManager;
         this.controlQueue = controlQueue;
@@ -103,6 +100,7 @@ public class SensorMonitor {
             SensorType sensor,
             double value,
             Threshold threshold) {
+
         String ruleId = threshold.getRuleId();
 
         String message = chamber + " " + threshold.getAlertLabel();
@@ -127,12 +125,8 @@ public class SensorMonitor {
             String chamber,
             ControlAction action) {
 
-        usage.addWater(action.getWaterCost());
-        usage.addEnergy(action.getEnergyCost());
-        usage.addNutrient(action.getNutrientCost());
-
         if (action.getDevice() != null) {
-            controlQueue.submit(chamber, action.getDevice());
+            controlQueue.submit(chamber, action);
         }
     }
 

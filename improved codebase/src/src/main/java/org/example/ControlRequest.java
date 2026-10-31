@@ -1,16 +1,15 @@
 package org.example;
 
-// one device request sent from a chamber thread to the control thread
-// record = immutable, so both threads can read it safely without locking
-public record ControlRequest(String chamber, String device) {
+// Immutable request passed from a chamber thread to the control thread.
+public record ControlRequest(String chamber, ControlAction action) {
 
-    // reject bad requests where they are created, instead of crashing the control thread later
     public ControlRequest {
         if (chamber == null || chamber.isBlank()) {
             throw new IllegalArgumentException("chamber must not be empty");
         }
-        if (device == null || device.isBlank()) {
-            throw new IllegalArgumentException("device must not be empty");
+
+        if (action == null) {
+            throw new IllegalArgumentException("action must not be null");
         }
     }
 }

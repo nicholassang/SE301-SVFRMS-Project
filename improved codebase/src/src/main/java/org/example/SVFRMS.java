@@ -43,14 +43,12 @@ public class SVFRMS {
             new ControlQueue();
 
     public static final ControlExecutor controlExecutor =
-            new ControlService(chambers, events);
+            new ControlService(chambers, events, usage);
 
-    // Sensor monitoring
     public static final SensorMonitor monitor =
             new SensorMonitor(
                     chambers,
                     crops,
-                    usage,
                     events,
                     alertManager,
                     controlQueue
