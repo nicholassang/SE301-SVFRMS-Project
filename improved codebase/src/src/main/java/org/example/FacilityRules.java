@@ -3,7 +3,7 @@ package org.example;
 import java.util.ArrayList;
 
 public class FacilityRules {
-    private ThresholdRules rules = new ThresholdRules();
+    private final ThresholdRules rules = new ThresholdRules();
 
     public void addRule(Threshold threshold) {
         rules.addRule(threshold);

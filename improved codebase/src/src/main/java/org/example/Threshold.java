@@ -2,11 +2,11 @@ package org.example;
 
 // stating a rule to solve the hard coded rules for every crops 
 public class Threshold {
-    private SensorType sensor;        // Temperature, humidity, etc
-    private ThresholdType type; // true = alert when ABOVE, false = alert when BELOW
-    private double limit;
-    private String alertLabel;   // eg. "Tomato High Temp"
-    private ControlAction action;
+    private final SensorType sensor;
+    private final ThresholdType type;
+    private final double limit;
+    private final String alertLabel;
+    private final ControlAction action;
 
     public Threshold(
             SensorType sensor,

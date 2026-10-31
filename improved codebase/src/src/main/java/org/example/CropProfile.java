@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 // Crops' profile plus its lists of rules from Threshold
 public class CropProfile {
-    private String name;
-    private ThresholdRules rules = new ThresholdRules();
+    private final String name;
+    private final ThresholdRules rules = new ThresholdRules();
 
     public CropProfile(String name){
         this.name = name;
