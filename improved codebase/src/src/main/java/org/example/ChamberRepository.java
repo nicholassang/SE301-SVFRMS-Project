@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 //solve race condition of threads calling getChamberState and getChamberSummary at the same time
 public class ChamberRepository {
-    private HashMap<String, ChamberState> chamberStates = new HashMap<>();
-    private HashMap<String, ChamberSummary> chamberSummaries = new HashMap<>();
+    private final HashMap<String, ChamberState> chamberStates = new HashMap<>();       // guarded by synchronized methods
+    private final HashMap<String, ChamberSummary> chamberSummaries = new HashMap<>();
 
     // synchronized for checking and create into one step
     public synchronized ChamberState getChamberState(String chamber){

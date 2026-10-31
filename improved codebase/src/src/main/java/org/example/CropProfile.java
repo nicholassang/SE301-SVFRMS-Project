@@ -1,11 +1,15 @@
 package org.example;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 // Crops' profile plus its lists of rules from Threshold
 public class CropProfile {
-    private String name;
-    private ArrayList<Threshold> thresholds = new ArrayList<>();
+    private final String name;
+    // chamber threads loop over this constantly, rules are added rarely:
+    // CopyOnWriteArrayList lets them loop safely even while a rule is being added
+    private final List<Threshold> thresholds = new CopyOnWriteArrayList<>();
 
     public CropProfile(String name){
         this.name = name;
