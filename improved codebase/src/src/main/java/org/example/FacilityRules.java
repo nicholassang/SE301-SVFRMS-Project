@@ -3,21 +3,15 @@ package org.example;
 import java.util.ArrayList;
 
 public class FacilityRules {
-    private ArrayList<Threshold> thresholds = new ArrayList<>();
+    private ThresholdRules rules = new ThresholdRules();
 
     public void addRule(Threshold threshold) {
-        thresholds.add(threshold);
+        rules.addRule(threshold);
     }
 
-    public ArrayList<Threshold> getBreaches(SensorType sensor, double value) {
-        ArrayList<Threshold> result = new ArrayList<>();
+    public ArrayList<Threshold> getBreaches(
+            SensorType sensor, double value) {
 
-        for (Threshold t : thresholds) {
-            if (t.isBreached(sensor, value)) {
-                result.add(t);
-            }
-        }
-
-        return result;
+        return rules.getBreaches(sensor, value);
     }
 }

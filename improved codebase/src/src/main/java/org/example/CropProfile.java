@@ -5,7 +5,7 @@ import java.util.ArrayList;
 // Crops' profile plus its lists of rules from Threshold
 public class CropProfile {
     private String name;
-    private ArrayList<Threshold> thresholds = new ArrayList<>();
+    private ThresholdRules rules = new ThresholdRules();
 
     public CropProfile(String name){
         this.name = name;
@@ -18,7 +18,7 @@ public class CropProfile {
     // add rules when the reading goes 'above' the limit
     public void addAbove(SensorType sensor, double limit,
                         String label, String device, int water, int energy) {
-        thresholds.add(new Threshold(
+        rules.addRule(new Threshold(
             sensor, ThresholdType.ABOVE, limit,
             name + " " + label, device, water, energy
         ));
@@ -27,7 +27,7 @@ public class CropProfile {
     // add rules when the reading goes 'below' the limit
     public void addBelow(SensorType sensor, double limit,
                         String label, String device, int water, int energy) {
-        thresholds.add(new Threshold(
+        rules.addRule(new Threshold(
             sensor, ThresholdType.BELOW, limit,
             name + " " + label, device, water, energy
         ));
@@ -35,20 +35,11 @@ public class CropProfile {
 
     // Used for the rules that has no crop name
     public void addRule(Threshold t) {
-        thresholds.add(t);
+        rules.addRule(t);
     }
 
     // return every rule it breaks when reading one sensor , ex. Tomato
-    public ArrayList<Threshold> getBreaches(SensorType sensor, double value) {
-        ArrayList<Threshold> result = new ArrayList<>();
-
-        for (Threshold t : thresholds) {
-            if (t.isBreached(sensor, value)) {
-                result.add(t);
-            }
-        }
-
-        return result;
+    public java.util.ArrayList<Threshold> getBreaches(SensorType sensor, double value) {
+        return rules.getBreaches(sensor, value);
     }
-
 }
