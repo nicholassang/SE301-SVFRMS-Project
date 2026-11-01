@@ -11,11 +11,10 @@ public class ChamberState {
             new EnumMap<>(SensorType.class);
 
     public ChamberState() {
-        readings.put(SensorType.TEMPERATURE, 24.0);
-        readings.put(SensorType.HUMIDITY, 70.0);
-        readings.put(SensorType.SOIL, 60.0);
-        readings.put(SensorType.LIGHT, 600.0);
-        readings.put(SensorType.NUTRIENT, 70.0);
+        // every sensor starts at its own default, so a new sensor needs no change here
+        for (SensorType sensor : SensorType.values()) {
+            readings.put(sensor, sensor.getDefaultValue());
+        }
     }
 
     public synchronized double getState(SensorType sensor) {

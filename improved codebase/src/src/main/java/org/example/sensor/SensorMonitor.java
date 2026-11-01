@@ -38,12 +38,6 @@ public class SensorMonitor {
         this.events = events;
         this.alertManager = alertManager;
         this.controlQueue = controlQueue;
-
-        severityPolicy.setLimits(SensorType.TEMPERATURE, 3, 7);
-        severityPolicy.setLimits(SensorType.HUMIDITY, 5, 15);
-        severityPolicy.setLimits(SensorType.SOIL, 5, 15);
-        severityPolicy.setLimits(SensorType.LIGHT, 100, 300);
-        severityPolicy.setLimits(SensorType.NUTRIENT, 5, 15);
     }
 
     public void processSensor(

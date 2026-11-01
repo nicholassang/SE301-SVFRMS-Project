@@ -1,43 +1,20 @@
 package org.example.alert;
 
 import org.example.sensor.SensorType;
+import org.example.sensor.SeverityLimits;
 
-import java.util.EnumMap;
-import java.util.Map;
-
+// each sensor carries its own limits (SensorType), so there is nothing to configure here
+// and no state at all: every chamber thread can call evaluate() without locking
 public class SeverityPolicy {
 
-    private final Map<SensorType, Double> warningLimits =
-            new EnumMap<>(SensorType.class);
-
-    private final Map<SensorType, Double> criticalLimits =
-            new EnumMap<>(SensorType.class);
-
-    public void setLimits(
-            SensorType sensor,
-            double warningLimit,
-            double criticalLimit
-    ) {
-        if (warningLimit < 0 || criticalLimit <= warningLimit) {
-            throw new IllegalArgumentException("Invalid severity limits");
-        }
-
-        warningLimits.put(sensor, warningLimit);
-        criticalLimits.put(sensor, criticalLimit);
-    }
-
     public AlertSeverity evaluate(SensorType sensor, double deviation) {
-        if (!warningLimits.containsKey(sensor)) {
-            throw new IllegalStateException(
-                    "Severity limits not configured for " + sensor
-            );
-        }
+        SeverityLimits limits = sensor.getSeverity();
 
-        if (deviation >= criticalLimits.get(sensor)) {
+        if (deviation >= limits.critical()) {
             return AlertSeverity.CRITICAL;
         }
 
-        if (deviation >= warningLimits.get(sensor)) {
+        if (deviation >= limits.warning()) {
             return AlertSeverity.WARNING;
         }
 

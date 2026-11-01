@@ -12,12 +12,9 @@ public class SimulatedSensorDataSource implements SensorDataSource {
             String crop,
             SensorType sensor) {
 
-        return switch (sensor) {
-            case TEMPERATURE -> 10 + random.nextInt(30);
-            case HUMIDITY -> 40 + random.nextInt(60);
-            case SOIL -> 20 + random.nextInt(60);
-            case LIGHT -> 300 + random.nextInt(900);
-            case NUTRIENT -> 20 + random.nextInt(80);
-        };
+        // each sensor knows its own range, so a new sensor needs no change here
+        // (Random is thread-safe, so the 4 chamber threads can share one instance)
+        ReadingRange range = sensor.getSimulatedRange();
+        return range.min() + random.nextInt(range.max() - range.min());
     }
 }
