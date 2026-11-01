@@ -66,40 +66,36 @@ public class ControlService implements ControlExecutor {
         double NO_MIN = -Double.MAX_VALUE;
         double NO_MAX = Double.MAX_VALUE;
 
-        addDevice(new Device(
-                "Cooling Fan", SensorType.TEMPERATURE,
-                -5, 18, NO_MAX,
-                "Temperature reduced to ", "C"
+        // each device lists the readings it moves; a device that moves several
+        // (e.g. ventilation: temperature and humidity) just passes more than one DeviceEffect
+        addDevice(new Device("Cooling Fan",
+                new DeviceEffect(SensorType.TEMPERATURE, -5, 18, NO_MAX,
+                        "Temperature reduced to ", "C")
         ));
 
-        addDevice(new Device(
-                "Water Pump", SensorType.SOIL,
-                20, NO_MIN, 100,
-                "Soil moisture increased to ", "%"
+        addDevice(new Device("Water Pump",
+                new DeviceEffect(SensorType.SOIL, 20, NO_MIN, 100,
+                        "Soil moisture increased to ", "%")
         ));
 
-        addDevice(new Device(
-                "Nutrient Injector", SensorType.NUTRIENT,
-                15, NO_MIN, 100,
-                "Nutrient level increased to ", "%"
+        addDevice(new Device("Nutrient Injector",
+                new DeviceEffect(SensorType.NUTRIENT, 15, NO_MIN, 100,
+                        "Nutrient level increased to ", "%")
         ));
 
-        addDevice(new Device(
-                "Humidifier", SensorType.HUMIDITY,
-                10, NO_MIN, 100,
-                "Humidity increased to ", "%"
+        addDevice(new Device("Humidifier",
+                new DeviceEffect(SensorType.HUMIDITY, 10, NO_MIN, 100,
+                        "Humidity increased to ", "%")
         ));
 
-        addDevice(new Device(
-                "Dehumidifier", SensorType.HUMIDITY,
-                -10, 30, NO_MAX,
-                "Humidity reduced to ", "%"
+        addDevice(new Device("Dehumidifier",
+                new DeviceEffect(SensorType.HUMIDITY, -10, 30, NO_MAX,
+                        "Humidity reduced to ", "%")
         ));
 
-        addDevice(new Device(
-                "Grow Light", SensorType.LIGHT,
-                150, NO_MIN, 1000,
-                "Light level increased to ", " lux"
+        addDevice(new Device("Grow Light",
+                new DeviceEffect(SensorType.LIGHT, 150, NO_MIN, 1000,
+                        "Light level increased to ", " lux")
         ));
     }
 }
