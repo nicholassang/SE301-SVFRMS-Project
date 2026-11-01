@@ -26,7 +26,9 @@ public class DailyEnvironmentalReport implements Report {
         LocalDate today = LocalDate.now();
         StringBuilder report = new StringBuilder();
 
-        report.append("\n===== DAILY ENVIRONMENTAL REPORT =====\n");
+        report.append("\n==============================\n");
+        report.append("= DAILY ENVIRONMENTAL REPORT =");
+        report.append("\n==============================\n");
         report.append("Date: ").append(today).append("\n\n");
         report.append(alertManager.getAlertStatistics()).append("\n\n");
 

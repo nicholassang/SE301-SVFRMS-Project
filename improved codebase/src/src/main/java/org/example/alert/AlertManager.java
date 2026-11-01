@@ -108,10 +108,6 @@ public class AlertManager {
                 a -> a.getStatus() == AlertStatus.ARCHIVED
         );
 
-        logger.info(
-                resolvedAlerts.size() + " resolved alerts archived."
-        );
-
         return resolvedAlerts.size();
     }
 

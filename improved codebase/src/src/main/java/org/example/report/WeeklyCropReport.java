@@ -46,7 +46,9 @@ public class WeeklyCropReport implements Report {
 
         StringBuilder report = new StringBuilder();
 
-        report.append("\n===== WEEKLY CROP REPORT =====\n");
+        report.append("\n==============================\n");
+        report.append("===== WEEKLY CROP REPORT =====");
+        report.append("\n==============================\n");
         report.append("Period: ").append(startDate)
                 .append(" to ").append(today).append("\n\n");
 

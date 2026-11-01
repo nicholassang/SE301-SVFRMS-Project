@@ -14,7 +14,9 @@ public class EnergyConsumptionReport implements Report {
     public String generate() {
         StringBuilder report = new StringBuilder();
 
-        report.append("\n===== ENERGY CONSUMPTION REPORT =====\n");
+        report.append("\n==============================\n");
+        report.append("== ENERGY CONSUMPTION REPORT =");
+        report.append("\n==============================\n");
         report.append("Date: ").append(LocalDate.now()).append("\n\n");
 
         report.append("Total Energy Consumption: ")

@@ -14,7 +14,9 @@ public class NutrientConsumptionReport implements Report {
     public String generate() {
         StringBuilder report = new StringBuilder();
 
-        report.append("\n===== NUTRIENT CONSUMPTION REPORT =====\n");
+        report.append("\n==============================\n");
+        report.append("=NUTRIENT CONSUMPTION REPORT =");
+        report.append("\n==============================\n");
         report.append("Date: ").append(LocalDate.now()).append("\n\n");
 
         report.append("Total Nutrient Consumption: ")

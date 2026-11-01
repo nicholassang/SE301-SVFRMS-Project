@@ -14,7 +14,9 @@ public class WaterUsageReport implements Report {
     public String generate() {
         StringBuilder report = new StringBuilder();
 
-        report.append("\n===== WATER USAGE REPORT =====\n");
+        report.append("\n==============================\n");
+        report.append("===== WATER USAGE REPORT =====");
+        report.append("\n==============================\n");
         report.append("Date: ").append(LocalDate.now()).append("\n\n");
 
         report.append("Total Water Consumption: ")
