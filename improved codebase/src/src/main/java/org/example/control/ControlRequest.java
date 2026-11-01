@@ -1,6 +1,5 @@
 package org.example.control;
 
-// Immutable request passed from a chamber thread to the control thread.
 public record ControlRequest(String chamber, ControlAction action) {
 
     public ControlRequest {

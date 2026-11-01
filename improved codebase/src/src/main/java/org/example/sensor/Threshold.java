@@ -2,7 +2,6 @@ package org.example.sensor;
 
 import org.example.control.ControlAction;
 
-// stating a rule to solve the hard coded rules for every crops 
 public class Threshold {
     private final SensorType sensor;
     private final ThresholdType thresholdType;

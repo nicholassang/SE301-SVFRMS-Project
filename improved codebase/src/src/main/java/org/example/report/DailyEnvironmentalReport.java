@@ -10,7 +10,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 
 public class DailyEnvironmentalReport implements Report {
-
     private final ReportDataSource dataSource;
     private final AlertManager alertManager;
 

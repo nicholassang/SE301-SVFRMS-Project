@@ -12,9 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class WeeklyCropReport implements Report {
-
     private final ReportDataSource dataSource;
-
     public WeeklyCropReport(ReportDataSource dataSource) {
         this.dataSource = dataSource;
     }

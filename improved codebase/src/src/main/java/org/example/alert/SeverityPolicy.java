@@ -6,12 +6,8 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class SeverityPolicy {
-
-    private final Map<SensorType, Double> warningLimits =
-            new EnumMap<>(SensorType.class);
-
-    private final Map<SensorType, Double> criticalLimits =
-            new EnumMap<>(SensorType.class);
+    private final Map<SensorType, Double> warningLimits = new EnumMap<>(SensorType.class);
+    private final Map<SensorType, Double> criticalLimits = new EnumMap<>(SensorType.class);
 
     public void setLimits(
             SensorType sensor,
@@ -32,15 +28,12 @@ public class SeverityPolicy {
                     "Severity limits not configured for " + sensor
             );
         }
-
         if (deviation >= criticalLimits.get(sensor)) {
             return AlertSeverity.CRITICAL;
         }
-
         if (deviation >= warningLimits.get(sensor)) {
             return AlertSeverity.WARNING;
         }
-
         return AlertSeverity.INFO;
     }
 }

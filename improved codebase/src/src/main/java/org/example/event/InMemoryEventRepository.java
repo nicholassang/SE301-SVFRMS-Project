@@ -8,12 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 public class InMemoryEventRepository implements EventRepository {
-
-    private final ArrayList<SensorReading> sensorReadings =
-            new ArrayList<>();
-
-    private final ArrayList<String> sensorLogs =
-            new ArrayList<>();
+    private final ArrayList<SensorReading> sensorReadings = new ArrayList<>();
+    private final ArrayList<String> sensorLogs = new ArrayList<>();
 
     @Override
     public synchronized void recordSensorReading(
@@ -21,11 +17,9 @@ public class InMemoryEventRepository implements EventRepository {
             String crop,
             SensorType sensor,
             double value) {
-
         sensorReadings.add(
                 new SensorReading(chamber, crop, sensor, value)
         );
-
         sensorLogs.add(
                 new Date() + " : Processing " + crop
                 + " " + sensor + " = " + value
@@ -41,16 +35,13 @@ public class InMemoryEventRepository implements EventRepository {
     public synchronized List<SensorReading> getSensorReadings(
             String chamber,
             SensorType sensor) {
-
         ArrayList<SensorReading> result = new ArrayList<>();
-
         for (SensorReading reading : sensorReadings) {
             if (reading.getChamber().equals(chamber)
                     && reading.getSensor() == sensor) {
                 result.add(reading);
             }
         }
-
         return result;
     }
 

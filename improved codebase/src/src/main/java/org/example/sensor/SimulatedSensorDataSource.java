@@ -3,7 +3,6 @@ package org.example.sensor;
 import java.util.Random;
 
 public class SimulatedSensorDataSource implements SensorDataSource {
-
     private final Random random = new Random();
 
     @Override

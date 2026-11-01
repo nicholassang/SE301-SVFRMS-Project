@@ -7,8 +7,7 @@ import java.util.Map;
 
 public class ChamberState {
 
-    private final Map<SensorType, Double> readings =
-            new EnumMap<>(SensorType.class);
+    private final Map<SensorType, Double> readings = new EnumMap<>(SensorType.class);
 
     public ChamberState() {
         readings.put(SensorType.TEMPERATURE, 24.0);
@@ -31,13 +30,9 @@ public class ChamberState {
             double change,
             double min,
             double max) {
-
         double newValue = readings.get(sensor) + change;
-
         newValue = Math.max(min, Math.min(newValue, max));
-
         readings.put(sensor, newValue);
-
         return newValue;
     }
 }

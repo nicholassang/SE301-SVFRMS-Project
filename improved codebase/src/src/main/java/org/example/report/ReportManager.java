@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.logging.Logger;
 
 public class ReportManager {
-
     private static final Logger logger = AppLogger.getLogger();
 
     private final ReportDataSource dataSource;

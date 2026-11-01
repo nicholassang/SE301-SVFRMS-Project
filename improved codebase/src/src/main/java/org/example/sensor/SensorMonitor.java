@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SensorMonitor {
-
     private final ChamberRepository chambers;
     private final CropRegister crops;
     private final EventRecorder events;

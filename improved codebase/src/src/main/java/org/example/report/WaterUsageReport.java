@@ -3,9 +3,7 @@ package org.example.report;
 import java.time.LocalDate;
 
 public class WaterUsageReport implements Report {
-
     private final ReportDataSource dataSource;
-
     public WaterUsageReport(ReportDataSource dataSource) {
         this.dataSource = dataSource;
     }

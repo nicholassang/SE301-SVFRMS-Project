@@ -1,7 +1,6 @@
 package org.example.resource;
 
 public class ResourceUsageTracker {
-
     private int totalWaterUsage = 0;
     private int totalEnergyUsage = 0;
     private int totalNutrientUsage = 0;

@@ -143,17 +143,13 @@ public class SVFRMS {
                             chamberFutures.add(chamberThreads.submit(
                                             new ChamberTask(chamber, crop, monitor, sensorDataSource, usage)));
                     }
-                    // Wait for every chamber task and propagate failures.
                     for (Future<?> future : chamberFutures) {
                         future.get();
                     }
                 }
             } finally {
-                // Ensure the control consumer receives its shutdown request
-                // even if a chamber task fails.
                 controlQueue.stop();
             }
-            // Wait for all queued control requests to finish.
             controlFuture.get();
         }
 

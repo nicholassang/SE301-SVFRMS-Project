@@ -7,9 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
 public class TextReportExporter implements ReportExporter {
-
-    private static final Path ARCHIVE_DIR = Paths.get("archive");
-
+    private static final String ARCHIVE_PATH = "archive";
+    private static final Path ARCHIVE_DIR = Paths.get(ARCHIVE_PATH);
     private static final Logger logger = AppLogger.getLogger();
 
     @Override

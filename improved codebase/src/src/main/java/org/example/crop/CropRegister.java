@@ -7,11 +7,9 @@ import org.example.control.ControlAction;
 
 import java.util.HashMap;
 
-// where all the crops is with adding and removing new crops
 public class CropRegister {
-    private final HashMap<String, CropProfile> crops = new HashMap<>();   // guarded by synchronized methods
-    private final FacilityRules facilityRules = new FacilityRules(); // rules for every crop
-
+    private final HashMap<String, CropProfile> crops = new HashMap<>();  
+    private final FacilityRules facilityRules = new FacilityRules(); 
 
     public CropRegister(){
         loadDefaultCrops();
@@ -27,13 +25,11 @@ public class CropRegister {
 
     public synchronized CropProfile getCrop(String name) {
         CropProfile crop = crops.get(name);
-
         if (crop == null) {
             throw new IllegalArgumentException(
                 "Unknown crop: " + name
             );
         }
-
         return crop;
     }
 
@@ -90,7 +86,6 @@ public class CropRegister {
         // kale.addLowerLimit(SensorType.TEMPERATURE, 7, "Low Temp", null, 0, 15);
         // kale.addLowerLimit(SensorType.SOIL, 50, "Low Soil Moisture", "Water Pump", 40, 0);
         // addCrop(kale);
-
 
         // these 2 rules applies to every crops
         facilityRules.addRule(new Threshold(

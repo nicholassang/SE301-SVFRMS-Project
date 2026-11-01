@@ -9,7 +9,6 @@ import org.example.sensor.SensorReading;
 import java.util.List;
 
 public class SVFRMSReportDataSource implements ReportDataSource {
-
     private final EventRepository events;
     private final ChamberRepository chambers;
     private final ResourceUsageTracker usage;

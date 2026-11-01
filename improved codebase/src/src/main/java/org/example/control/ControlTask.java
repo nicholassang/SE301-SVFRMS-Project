@@ -3,10 +3,7 @@ package org.example.control;
 import org.example.logging.AppLogger;
 import java.util.logging.Logger;
 
-import java.util.logging.Logger;
-
 public class ControlTask implements Runnable {
-
     private static final Logger logger = AppLogger.getLogger();
 
     private final ControlQueue controlQueue;
@@ -22,18 +19,14 @@ public class ControlTask implements Runnable {
 
     @Override
     public void run() {
-
         try {
             ControlRequest request;
-
             while ((request = controlQueue.next()) != null) {
-
                 try {
                     controlExecutor.activateControl(
                             request.chamber(),
                             request.action()
                     );
-
                 } catch (RuntimeException e) {
                     logger.warning(
                             "Control request failed for "
@@ -42,7 +35,6 @@ public class ControlTask implements Runnable {
                     );
                 }
             }
-
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

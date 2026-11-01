@@ -7,12 +7,9 @@ import org.example.logging.AppLogger;
 import org.example.sensor.SensorReading;
 import org.example.sensor.SensorType;
 
-import org.example.logging.AppLogger;
-
 import java.util.logging.Logger;
 
 public class EventRecorder {
-
     private static final Logger logger = AppLogger.getLogger();
 
     private static final String GREEN = "\u001B[32m";
@@ -49,14 +46,11 @@ public class EventRecorder {
 
     public void recordAlert(Alert alert) {
         String message = alert.getMessage();
-
         if (!alertManager.addAlertIfAbsent(alert)) {
             return;
         }
-
         chambers.getChamberSummary(alert.getChamber())
                 .recordAlert(message);
-
         logger.info(
                 "[" + alert.getChamber() + "]"
                 + "[" + alert.getCrop() + "]"
@@ -69,14 +63,11 @@ public class EventRecorder {
             String chamber,
             String action,
             String result) {
-
         chambers.getChamberSummary(chamber).recordAction(action);
-
         logger.info(
                 "\t" + GREEN + "[" + chamber + "][CONTROL] "
                 + action + RESET
         );
-
         logger.info(
                 "\t" + GREEN + "[" + chamber + "][CONTROL] "
                 + result + RESET
@@ -87,10 +78,7 @@ public class EventRecorder {
         return eventRepository.getSensorReadings();
     }
 
-    public java.util.List<SensorReading> getSensorReadings(
-            String chamber,
-            SensorType sensor) {
-
+    public java.util.List<SensorReading> getSensorReadings(String chamber,SensorType sensor) {
         return eventRepository.getSensorReadings(chamber, sensor);
     }
 

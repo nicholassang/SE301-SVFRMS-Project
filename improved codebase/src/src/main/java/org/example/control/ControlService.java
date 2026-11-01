@@ -44,12 +44,10 @@ public class ControlService implements ControlExecutor {
             );
         }
 
-        // Attempt device activation first.
         String result = device.activate(
                 chambers.getChamberState(chamber)
         );
 
-        // Only account for resources after successful activation.
         usage.addWater(action.getWaterCost());
         usage.addEnergy(action.getEnergyCost());
         usage.addNutrient(action.getNutrientCost());

@@ -13,9 +13,7 @@ public class FacilityRules {
         rules.addRule(threshold);
     }
 
-    public ArrayList<Threshold> findBreaches(
-            SensorType sensor, double value) {
-
+    public ArrayList<Threshold> findBreaches(SensorType sensor, double value) {
         return rules.findBreaches(sensor, value);
     }
 }

@@ -6,7 +6,6 @@ import org.example.sensor.SensorType;
 import java.util.List;
 
 public interface EventRepository {
-
     void recordSensorReading(
             String chamber,
             String crop,

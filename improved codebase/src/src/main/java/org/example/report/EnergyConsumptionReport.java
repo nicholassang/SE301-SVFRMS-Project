@@ -3,7 +3,6 @@ package org.example.report;
 import java.time.LocalDate;
 
 public class EnergyConsumptionReport implements Report {
-
     private final ReportDataSource dataSource;
 
     public EnergyConsumptionReport(ReportDataSource dataSource) {

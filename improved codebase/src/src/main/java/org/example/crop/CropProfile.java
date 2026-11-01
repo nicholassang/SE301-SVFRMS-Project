@@ -12,9 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CropProfile {
     private final String name;
-
-    private final List<Threshold> thresholds =
-            new CopyOnWriteArrayList<>();
+    private final List<Threshold> thresholds = new CopyOnWriteArrayList<>();
 
     public CropProfile(String name) {
         this.name = name;
@@ -27,42 +25,38 @@ public class CropProfile {
     public void addUpperLimit(SensorType sensor, double limit,
                               String label, String device,
                               int water, int energy) {
-        thresholds.add(new Threshold(
-                sensor,
-                ThresholdType.ABOVE,
-                limit,
-                name + " " + label,
-                new ControlAction(device, water, energy, 0)
-        ));
+            thresholds.add(new Threshold(
+                    sensor,
+                    ThresholdType.ABOVE,
+                    limit,
+                    name + " " + label,
+                    new ControlAction(device, water, energy, 0)
+            ));
     }
 
     public void addLowerLimit(SensorType sensor, double limit,
                               String label, String device,
                               int water, int energy) {
-        thresholds.add(new Threshold(
-                sensor,
-                ThresholdType.BELOW,
-                limit,
-                name + " " + label,
-                new ControlAction(device, water, energy, 0)
-        ));
+            thresholds.add(new Threshold(
+                    sensor,
+                    ThresholdType.BELOW,
+                    limit,
+                    name + " " + label,
+                    new ControlAction(device, water, energy, 0)
+            ));
     }
 
     public void addRule(Threshold threshold) {
         thresholds.add(threshold);
     }
 
-    public ArrayList<Threshold> findBreaches(
-            SensorType sensor, double value) {
-
+    public ArrayList<Threshold> findBreaches(SensorType sensor, double value) {
         ArrayList<Threshold> breaches = new ArrayList<>();
-
         for (Threshold threshold : thresholds) {
             if (threshold.isBreached(sensor, value)) {
                 breaches.add(threshold);
             }
         }
-
         return breaches;
     }
 }

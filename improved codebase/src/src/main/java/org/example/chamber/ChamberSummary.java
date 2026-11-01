@@ -6,13 +6,11 @@ public class ChamberSummary {
     private String lastAction = "No action";
     private String lastAlert = "None";
 
-    // equivalent to TRACK_ALERT inside handleEvent 
     public synchronized void recordAlert(String message){
         alerts++;
         lastAlert = message;
     }
 
-    // equivalent to TRACK_ACTION inside handleEvent
     public synchronized void recordAction(String message){
         mitigationActions++;
         lastAction = message;
