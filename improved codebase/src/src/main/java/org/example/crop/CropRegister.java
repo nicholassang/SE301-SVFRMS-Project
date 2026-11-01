@@ -37,6 +37,9 @@ public class CropRegister {
         return crop;
     }
 
+    public synchronized boolean hasCrop(String name){
+        return crops.containsKey(name);
+    }
 
     public FacilityRules getFacilityRules() {
         return facilityRules;
@@ -72,12 +75,20 @@ public class CropRegister {
         CropProfile chili = new CropProfile("Chili");
         chili.addUpperLimit(SensorType.TEMPERATURE, 32, "High Temp", "Cooling Fan", 0, 0);
         chili.addLowerLimit(SensorType.TEMPERATURE, 24, "Low Temp", null, 0, 0);
-        addCrop(chili);
+        addCrop(chili); // comment out for removing a crop
 
         CropProfile cucumber = new CropProfile("Cucumber");
         cucumber.addUpperLimit(SensorType.TEMPERATURE, 27, "High Temp", "Cooling Fan", 0, 0);
         cucumber.addLowerLimit(SensorType.TEMPERATURE, 18, "Low Temp", null, 0, 0);
         addCrop(cucumber);
+
+        // Uncomment to add a crop for demo
+        // CropProfile kale = new CropProfile("Kale");
+        // kale.addUpperLimit(SensorType.TEMPERATURE, 24, "High Temp", "Cooling Fan", 0, 10);
+        // kale.addLowerLimit(SensorType.TEMPERATURE, 7, "Low Temp", null, 0, 15);
+        // kale.addLowerLimit(SensorType.SOIL, 50, "Low Soil Moisture", "Water Pump", 40, 0);
+        // addCrop(kale);
+
 
         // these 2 rules applies to every crops
         facilityRules.addRule(new Threshold(
