@@ -1,0 +1,15 @@
+package org.example.report;
+
+import org.example.sensor.SensorReading;
+import org.example.chamber.ChamberSummary;
+
+import java.util.List;
+
+public interface ReportDataSource {
+    List<SensorReading> getSensorReadings();
+    List<String> getChamberNames();
+    ChamberSummary getChamberSummary(String chamber);
+    int getTotalWaterUsage();
+    int getTotalEnergyUsage();
+    int getTotalNutrientUsage();
+}
