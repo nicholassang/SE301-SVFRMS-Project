@@ -45,7 +45,9 @@ public class CropRegister {
         return facilityRules;
     }
 
-    // fix the giant if-else statement (SOLID --> Open Close, code smell --> DRY)
+    // NOTE: Crop defaults are hardcoded to preserve legacy behaviour; a future Simulator could automate crop management.
+    // Arguments: sensor type, threshold, breach label, device, water usage, and energy usage.
+    // Light and nutrient thresholds are defined globally in FacilityRules.
     private void loadDefaultCrops(){
         CropProfile tomato = new CropProfile("Tomato");
         tomato.addUpperLimit(SensorType.TEMPERATURE, 28, "High Temp", "Cooling Fan", 0, 10);
