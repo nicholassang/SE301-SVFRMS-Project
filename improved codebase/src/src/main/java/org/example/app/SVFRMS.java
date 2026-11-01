@@ -44,6 +44,8 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.concurrent.Future;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SVFRMS {
 
@@ -120,6 +122,13 @@ public class SVFRMS {
 
     public static void main(String[] args) throws Exception {
 
+        Map<String, String> chamberCrops = new LinkedHashMap<>();
+        chamberCrops.put("CH1", "Tomato");
+        chamberCrops.put("CH2", "Strawberry");
+        chamberCrops.put("CH3", "Lettuce");
+        chamberCrops.put("CH4", "Chili");
+        // chamberCrops.put("CH5", "Kale"); // uncomment to add a crop for demo
+
         try (ExecutorService controlThread =
                     Executors.newSingleThreadExecutor()) {
 
@@ -129,37 +138,22 @@ public class SVFRMS {
 
             try {
                 try (ExecutorService chamberThreads =
-                            Executors.newFixedThreadPool(4)) {
+                            Executors.newFixedThreadPool(chamberCrops.size())) {
 
                     List<Future<?>> chamberFutures = new ArrayList<>();
 
-                    chamberFutures.add(chamberThreads.submit(
-                            new ChamberTask(
-                                    "CH1", "Tomato",
-                                    monitor, sensorDataSource, usage
-                            )
-                    ));
+                    for (Map.Entry<String, String> entry : chamberCrops.entrySet()) {
+                            String chamber = entry.getKey();
+                            String crop = entry.getValue();
 
-                    chamberFutures.add(chamberThreads.submit(
-                            new ChamberTask(
-                                    "CH2", "Strawberry",
-                                    monitor, sensorDataSource, usage
-                            )
-                    ));
+                            if (!crops.hasCrop(crop)) {
+                                    logger.warning("Skipping " + chamber + ": crop '" + crop + "' is not registered");
+                                    continue;
+                            }
 
-                    chamberFutures.add(chamberThreads.submit(
-                            new ChamberTask(
-                                    "CH3", "Lettuce",
-                                    monitor, sensorDataSource, usage
-                            )
-                    ));
-
-                    chamberFutures.add(chamberThreads.submit(
-                            new ChamberTask(
-                                    "CH4", "Chili",
-                                    monitor, sensorDataSource, usage
-                            )
-                    ));
+                            chamberFutures.add(chamberThreads.submit(
+                                            new ChamberTask(chamber, crop, monitor, sensorDataSource, usage)));
+                    }
 
                     // Wait for every chamber task and propagate failures.
                     for (Future<?> future : chamberFutures) {
