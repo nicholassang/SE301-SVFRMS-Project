@@ -46,75 +46,113 @@ The improved implementation separates the system into packages according to thei
 
 ```text
 org.example
-├── app          Application entry point and component setup
-├── alert        Alert lifecycle and archival
-├── chamber      Chamber state, repository and simulation tasks
-├── control      Control requests, queue and device execution
-├── crop         Crop profiles and facility rules
-├── event        Event recording and storage
-├── logging      Application logging
-├── report       Report generation and exporting
-├── resource     Water, energy and nutrient tracking
-└── sensor       Sensor readings, monitoring and thresholds
+├── app
+│   └── SVFRMS.java
+├── alert
+│   ├── Alert.java
+│   ├── AlertManager.java
+│   ├── AlertSeverity.java
+│   └── AlertStatus.java
+├── chamber
+│   ├── ChamberState.java
+│   ├── ChamberRepository.java
+│   └── ChamberTask.java
+├── control
+│   ├── ControlRequest.java
+│   ├── ControlQueue.java
+│   ├── ControlTask.java
+│   ├── ControlService.java
+│   ├── Device.java
+│   └── DeviceRegistry.java
+├── crop
+│   ├── CropProfile.java
+│   ├── CropRegister.java
+│   └── FacilityRules.java
+├── event
+│   ├── EventRecorder.java
+│   └── EventRepository.java
+├── logging
+├── report
+│   ├── Report.java
+│   ├── ReportManager.java
+│   ├── ReportDataSource.java
+│   ├── ReportExporter.java
+│   └── TextReportExporter.java
+├── resource
+│   └── ResourceUsageTracker.java
+└── sensor
+    ├── SensorMonitor.java
+    ├── SensorDataSource.java
+    ├── SimulatedSensorDataSource.java
+    └── Threshold.java
 ```
 
 ### 3.1 Component Architecture
 
+The improved architecture separates sensor monitoring, alert management, event recording, device control and reporting.
+
 ```mermaid
 flowchart TD
-    A["SVFRMS<br/>Application Entry Point"]
+    A["SVFRMS"]
 
-    subgraph Monitoring["Monitoring"]
+    subgraph Monitoring
         B["ChamberTask"]
         C["SensorDataSource"]
         D["SensorMonitor"]
-        E["CropRegister / Threshold Rules"]
+        E["CropRegister / FacilityRules"]
     end
 
-    subgraph Management["Alert and Event Management"]
+    subgraph Alert_Event_Management["Alert and Event Management"]
         F["AlertManager"]
-        G["ArchiveManager"]
-        H["EventRecorder"]
-        I["EventRepository"]
+        G["EventRecorder"]
+        H["EventRepository"]
     end
 
-    subgraph Control["Device Control"]
-        J["ControlQueue"]
+    subgraph Device_Control["Device Control"]
+        I["ControlQueue"]
+        J["ControlTask"]
         K["ControlService"]
-        L["Device"]
-        M["ResourceUsageTracker"]
+        L["DeviceRegistry"]
+        M["Device"]
+        N["ResourceUsageTracker"]
     end
 
-    subgraph Reporting["Reporting"]
-        N["ReportManager"]
-        O["ReportDataSource"]
-        P["Report Types"]
-        Q["ReportExporter"]
+    subgraph Reporting
+        O["ReportManager"]
+        P["ReportDataSource"]
+        Q["Report Types"]
+        R["ReportExporter"]
     end
 
     A --> B
     B --> C
     B --> D
     E --> D
+
     D --> F
-    D --> H
-    D --> J
+    D --> G
+    F --> I
     F --> G
-    H --> I
+    G --> H
+
+    I --> J
     J --> K
     K --> L
-    K --> M
-    A --> N
-    N --> O
-    O --> I
-    O --> M
+    L --> M
+    K --> N
+    K --> G
+
+    A --> O
     O --> P
-    P --> Q
+    O --> Q
+    O --> R
+    P --> H
+    P --> N
 ```
 
 ### 3.2 Sensor Monitoring and Control Sequence
 
-The following diagram illustrates what happens when a sensor reading breaches its configured threshold.
+When a sensor reading breaches its configured threshold, the system creates an alert and submits a control request for execution.
 
 ```mermaid
 sequenceDiagram
@@ -135,27 +173,43 @@ sequenceDiagram
     Crop-->>Sensor: Return breached rules
 
     alt Threshold breached
-        Sensor->>Alert: Create alert
-        Sensor->>Event: Record sensor event and alert
-        Sensor->>Queue: Submit ControlRequest
+        Sensor->>Alert: Create or update alert
+        Sensor->>Event: Record sensor event
+        Alert->>Event: Record alert event
+        Alert->>Queue: Submit ControlRequest
+
         Queue-->>Task: Deliver request
         Task->>Service: Execute control request
         Service->>Device: Apply device effect
-        Device-->>Service: Update chamber state
+        Device-->>Service: Return execution result
         Service->>Resource: Update resource usage
         Service->>Event: Record control action
+
+        Sensor->>Sensor: Obtain fresh sensor reading
+        Sensor->>Crop: Re-evaluate threshold
+
+        alt Reading within acceptable range
+            Sensor->>Alert: Resolve alert
+            Alert->>Event: Record alert resolution
+        else Condition persists
+            Sensor->>Alert: Keep alert active
+        end
     else No threshold breach
         Sensor->>Sensor: Continue monitoring
     end
 ```
 
+A successful device operation does not automatically resolve an alert. The system must obtain a fresh sensor reading and confirm that the condition has returned to an acceptable range.
+
 ### 3.3 Concurrent Execution Model
 
-The system uses four chamber tasks and a separate control consumer.
+The system uses a fixed thread pool for the four chamber tasks and a separate single-threaded consumer for control requests.
 
-```mermaid
+```
 flowchart TD
-    A["SVFRMS"] --> B["Chamber Executor<br/>Fixed thread pool: 4"]
+    A["SVFRMS"]
+
+    A --> B["Chamber Executor<br/>Fixed thread pool: 4"]
     A --> C["Control Executor<br/>Single consumer"]
 
     B --> D1["CH1 - Tomato"]
@@ -175,17 +229,17 @@ flowchart TD
     H --> I["Resource Usage Update"]
 
     B --> J["Wait for chamber tasks"]
-    J --> K["Stop ControlQueue"]
+    J --> K["Submit Poison Pill"]
     K --> L["Drain pending requests"]
     L --> M["Archive alerts"]
     M --> N["Generate reports"]
 ```
 
-The bounded control queue separates sensor monitoring from device execution. Chamber tasks produce requests, while the control consumer processes them independently.
+The bounded control queue separates sensor monitoring from device execution. Chamber tasks produce control requests, while the control consumer processes them independently. A poison pill signals the consumer to terminate gracefully after pending requests have been processed.
 
 ## 4. Design and Implementation Highlights
 
-The improved implementation introduces several design improvements:
+The improved implementation introduces the following design improvements:
 
 | Improvement | Implementation |
 |---|---|
@@ -196,191 +250,84 @@ The improved implementation introduces several design improvements:
 | Producer–Consumer | `ControlQueue` backed by `ArrayBlockingQueue` |
 | Graceful shutdown | Poison Pill pattern |
 | Thread-safe state management | Synchronised methods and concurrent collections |
-| Report abstraction | `ReportDataSource` and `ReportExporter` |
+| Device registration | `DeviceRegistry` |
+| Data access abstraction | `ChamberRepository` and `EventRepository` |
+| Report abstraction | `Report`, `ReportDataSource` and `ReportExporter` |
 
 ### Design Patterns Used
 
 - **Producer–Consumer:** Separates control request production from execution.
-- **Poison Pill:** Signals the control consumer to terminate after pending requests are processed.
-- **Thread Pool:** Manages chamber and control task execution.
+- **Poison Pill:** Signals the control consumer to terminate gracefully.
+- **Thread Pool:** Manages chamber and control task execution through `ExecutorService`.
 - **Command:** Encapsulates device activation requests in `ControlRequest`.
-- **Immutable Objects:** Prevents modification of shared `ControlRequest`, `Device` and `Threshold` objects.
-- **Monitor Object:** Protects shared state through synchronised methods.
+- **DTO:** Transfers control request data between components.
+- **Strategy:** Allows different sensor data sources and report exporters to be used through common interfaces.
+- **Repository:** Separates data access from business logic.
 - **Registry:** Allows crops and devices to be registered and retrieved by name.
 - **Dependency Injection:** Supplies dependencies through constructors.
-- **Singleton:** Provides a shared application logger through `AppLogger`.
-
-## 5. Prerequisites
-
-Before running the improved implementation, ensure that the following are installed:
-
-- **Java Development Kit (JDK):** A JDK compatible with the source code.
-- **Windows:** The supplied `run.bat` script is intended for Windows.
-- **PATH configuration:** The Java `java` and `javac` executables must be accessible from Command Prompt.
-
-Verify your installation:
-
-```bat
-java -version
-javac -version
-```
-
-Both commands should return a version number.
-
-## 6. How to Run
-
-### 6.1 Clone or Download the Project
-
-Open a terminal in the project directory:
-
-```bat
-cd "path\to\vertical-farm"
-```
-
-### 6.2 Run the Improved Implementation
-
-Navigate into the improved codebase:
-
-```bat
-cd "improved codebase"
-```
-
-Execute the supplied batch script:
-
-```bat
-run.bat
-```
-
-The script automatically:
-
-1. Removes the previous `out` directory.
-2. Creates a fresh output directory.
-3. Recursively discovers Java source files under `src\src\main\java`.
-4. Compiles the source files into `out`.
-5. Starts the application using `org.example.app.SVFRMS`.
-
-The application can also be launched manually after compilation:
-
-```bat
-java -cp out org.example.app.SVFRMS
-```
-
-### 6.3 Expected Execution
-
-The application simulates four growing chambers, each running 20 iterations and collecting five sensor readings per iteration.
-
-Expected total sensor readings:
-
-```text
-4 chambers × 20 iterations × 5 sensors = 400 readings
-```
-
-During execution, the system:
-
-- Generates simulated sensor readings.
-- Evaluates crop-specific thresholds.
-- Creates alerts when thresholds are breached.
-- Queues and executes device control requests.
-- Updates resource consumption.
-- Archives alerts and generates reports after the simulation finishes.
-
-The daily report is written to:
-
-```text
-archive/daily_report.txt
-```
-
-The exact console output, alert count and resource totals may vary because sensor readings are simulated.
-
-## 7. Project Structure
-
-```text
-vertical-farm/
-│
-├── README.md
-├── SE301-Project-Specification.pdf
-│
-├── legacy codebase/
-│   └── Original implementation
-│
-└── improved codebase/
-    │
-    ├── src/
-    │   └── src/main/java/org/example/
-    │       ├── app/
-    │       ├── alert/
-    │       ├── chamber/
-    │       ├── control/
-    │       ├── crop/
-    │       ├── event/
-    │       ├── logging/
-    │       ├── report/
-    │       ├── resource/
-    │       └── sensor/
-    │
-    ├── archive/
-    │   └── daily_report.txt
-    │
-    ├── out/                 Compiled class files
-    ├── pom.xml              Maven project configuration
-    ├── run.bat              Windows build and run script
-    └── svfrms-1.0.0.jar     Packaged application JAR
-```
+- **Monitor Object:** Protects shared state through synchronised methods.
 
 ## 8. Extending the System
 
-The improved architecture allows new crops and devices to be introduced without modifying the core monitoring and evaluation logic.
+The improved architecture separates crop configuration and device management from the core monitoring and control logic.
 
 ### Adding a New Crop
 
-Create a new `CropProfile`, register its threshold rules and add it to `CropRegister`.
+Create a `CropProfile`, define its threshold rules and register it through `CropRegister`.
 
 Example:
 
 ```java
 CropProfile kale = new CropProfile("Kale");
 
-kale.addAbove("Temperature", 24,
-    "High Temp", "Cooling Fan", 0, 10);
+kale.addUpperLimit(
+    SensorType.TEMPERATURE,
+    24,
+    "High Temp",
+    "Cooling Fan",
+    0,
+    10
+);
 
-kale.addBelow("Soil", 50,
-    "Low Soil Moisture", "Water Pump", 50, 0);
+kale.addLowerLimit(
+    SensorType.SOIL,
+    50,
+    "Low Soil Moisture",
+    "Water Pump",
+    50,
+    0
+);
 
 cropRegister.addCrop(kale);
 ```
 
-A chamber can then be configured to grow Kale by creating a new `ChamberTask` with the corresponding crop name.
+A chamber can then be configured to grow Kale by creating a `ChamberTask` with the corresponding crop name.
+
+**Note:** Default crop profiles and their thresholds are currently hardcoded in `CropRegister` to preserve the legacy implementation's behaviour. Crops can still be added or removed at runtime through its registration methods. A future implementation could externalise crop configuration or introduce a dedicated simulator to automate crop management. Light and nutrient thresholds are defined globally through `FacilityRules`, rather than separately for each crop.
 
 ### Adding a New Device
 
-Register a new `Device` in the control service with its sensor type, adjustment amount and permitted bounds.
+Implement the `Device` abstraction and register the device through `DeviceRegistry`. The device can then be referenced by crop threshold rules through its registered name.
 
-Once registered, crop threshold rules can reference the new device.
+### Adding a New Report Export Format
+
+Implement the `ReportExporter` interface and supply the implementation to `ReportManager`. This allows additional formats, such as CSV or PDF, to be introduced without changing the report generation logic.
 
 ## 9. Legacy vs Improved Implementation
 
 | Area | Legacy | Improved |
 |---|---|---|
 | Architecture | Single large class | Responsibility-based packages |
-| Sensor thresholds | Hard-coded conditional statements | Configurable threshold objects |
-| Event handling | String-based dispatcher | Focused methods in `EventRecorder` |
-| Device requests | Delimited strings | Immutable `ControlRequest` objects |
+| Sensor thresholds | Hardcoded conditional statements | `Threshold` objects and crop profiles |
+| Event handling | String-based dispatcher | Dedicated `EventRecorder` |
+| Device requests | Delimited strings | `ControlRequest` objects |
 | Thread management | Manual thread creation and joining | `ExecutorService` |
-| Shared state | Public static collections and locks | Encapsulated thread-safe components |
+| Shared state | Public static collections and manual locks | Encapsulated, thread-safe components |
 | Control queue | Manual `wait()` and `notifyAll()` | `ArrayBlockingQueue` |
-| Extensibility | Requires modifying existing logic | Register new crops and devices |
+| Device management | Embedded control logic | `DeviceRegistry` and `Device` abstraction |
+| Data access | Direct collection access | Repository abstractions |
+| Reporting | Tightly coupled report generation | Separate report, data source and exporter abstractions |
+| Extensibility | Changes often require modifying existing logic | New crops, devices and exporters can be added through existing abstractions |
 
-## 10. Future Improvements
-
-Potential areas for further development include:
-
-- Complete dependency injection by converting remaining static dependencies into instance-based components.
-- Replace string-based alert representations with typed `Alert` and `AlertStatus` objects.
-- Introduce automated unit and integration tests.
-- Add retry policies and failure handling for device control requests.
-- Externalise crop thresholds and device configurations into configuration files.
-- Introduce persistent storage for sensor readings, alerts and resource consumption.
-
----
 
 **SE301 Group 14 — Smart Vertical Farming Research Management System**
